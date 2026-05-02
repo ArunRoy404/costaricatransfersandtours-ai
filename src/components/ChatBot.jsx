@@ -18,6 +18,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
   const [sessionId, setSessionId] = useState('');
 
   // Handle external trigger
@@ -27,6 +28,15 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
       if (setExternalOpen) setExternalOpen(false);
     }
   }, [externalOpen, setExternalOpen]);
+
+  // Auto-focus input when chat opens
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 300); // Small delay to wait for animation
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     // Generate or retrieve session ID
@@ -94,6 +104,8 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
       }]);
     } finally {
       setIsLoading(false);
+      // Refocus input after response
+      setTimeout(() => inputRef.current?.focus(), 100);
     }
   };
 
@@ -140,7 +152,15 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                 >
                   {msg.type === 'bot' ? (
                     <div className="markdown-content">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      <ReactMarkdown
+                        components={{
+                          a: ({ node, ...props }) => (
+                            <a {...props} target="_blank" rel="noopener noreferrer" />
+                          ),
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
                     </div>
                   ) : (
                     msg.content
@@ -161,6 +181,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
 
             <div className="chatbot-input-area">
               <input
+                ref={inputRef}
                 type="text"
                 className="chatbot-input"
                 placeholder="Type your message..."
