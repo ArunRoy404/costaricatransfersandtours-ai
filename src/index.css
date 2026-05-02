@@ -65,3 +65,38 @@ h1, h2, h3, h4, h5, h6 {
 #n8n-chat-widget {
   z-index: 1000;
 }
+
+
+
+
+  /* Chat message HTML styling */
+  .chat-message-markdown p {
+    margin: 6px 0;
+    line-height: 1.5;
+  }
+  .chat-message-markdown strong {
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  .chat-message-markdown a {
+    color: #00b894;
+    text-decoration: underline;
+    font-weight: 500;
+    word-break: break-word;
+  }
+  .chat-message-markdown a:hover {
+    color: #019b7d;
+  }
+  .chat-message-markdown ol,
+  .chat-message-markdown ul {
+    padding-left: 18px;
+    margin: 8px 0;
+  }
+  .chat-message-markdown li {
+    margin: 6px 0;
+    line-height: 1.5;
+  }
+  .chat-message-markdown br {
+    display: block;
+    margin: 2px 0;
+  }
