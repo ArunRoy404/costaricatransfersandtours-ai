@@ -1,51 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import heroImg from './assets/hero.png';
+import ChatBot from './components/ChatBot';
 
 function App() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
   const toggleChat = () => {
-    // 1. Try the programmatic API (window.Chatbot is the standard for n8n)
-    if (window.Chatbot) {
-      if (typeof window.Chatbot.open === 'function') {
-        window.Chatbot.open();
-        return;
-      }
-      if (typeof window.Chatbot.toggle === 'function') {
-        window.Chatbot.toggle();
-        return;
-      }
-    }
-
-    // 2. Try the window.n8nChat fallback
-    if (window.n8nChat && typeof window.n8nChat.open === 'function') {
-      window.n8nChat.open();
-      return;
-    }
-
-    // 3. Try to find the button in the main DOM
-    let chatButton = document.querySelector('.n8n-chat-widget__toggle') || 
-                     document.querySelector('.n8n-chat-widget-button') || 
-                     document.querySelector('#n8n-chat-widget button');
-    
-    // 4. Try to find it inside Shadow DOM (common for n8n)
-    if (!chatButton) {
-      const chatContainer = document.querySelector('#n8n-chat-widget');
-      if (chatContainer && chatContainer.shadowRoot) {
-        chatButton = chatContainer.shadowRoot.querySelector('button');
-      }
-    }
-
-    if (chatButton) {
-      chatButton.click();
-    } else {
-      console.error('Could not find n8n chat widget or its toggle method.');
-      // Final attempt: Just try to toggle any button in the widget container
-      const fallbackContainer = document.querySelector('#n8n-chat-widget');
-      if (fallbackContainer) {
-        const anyButton = fallbackContainer.querySelector('button');
-        if (anyButton) anyButton.click();
-      }
-    }
+    setIsChatOpen(true);
   };
 
   return (
@@ -98,6 +60,9 @@ function App() {
       <footer className="simple-footer">
         <p>&copy; 2026 Costa Rica Transfers & Tours</p>
       </footer>
+
+      {/* Custom ChatBot Component */}
+      <ChatBot externalOpen={isChatOpen} setExternalOpen={setIsChatOpen} />
     </div>
   );
 }

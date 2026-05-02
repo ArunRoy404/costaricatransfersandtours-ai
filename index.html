@@ -11,34 +11,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- n8n Chat Widget -->
-    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    
-    <script type="module">
-      import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
-      window.Chatbot = createChat({
-        webhookUrl: 'https://costarica.app.n8n.cloud/webhook/maya-chat',
-        title: 'Maya AI',
-        subtitle: 'Your Costa Rica Travel Guide',
-        initialMessages: [
-          '¡Hola! I am Maya, your Costa Rica travel assistant.',
-          'How can I help you plan your perfect trip today?'
-        ],
-        branding: {
-          logo: 'https://costarica.app.n8n.cloud/static/logo.png',
-          name: 'Costa Rica Transfers',
-          welcomeText: 'Chat with Maya AI'
-        },
-        style: {
-          primaryColor: '#00b894',
-        }
-      });
-      console.log('n8n Chatbot initialized:', window.Chatbot);
-    </script>
   </body>
 </html>
