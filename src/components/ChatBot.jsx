@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, X, MessageCircle, User, Bot, Loader2 } from 'lucide-react';
+import { Send, X, MessageCircle, User, Bot, Loader2, Maximize2, Minimize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import './ChatBot.css';
@@ -8,6 +8,7 @@ const WEBHOOK_URL = 'https://costarica.app.n8n.cloud/webhook/maya-chat';
 
 const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLarge, setIsLarge] = useState(false);
   const [messages, setMessages] = useState([
     { 
       id: '1', 
@@ -18,7 +19,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
+  const textareaRef = useRef(null);
   const [sessionId, setSessionId] = useState('');
 
   // Handle external trigger
@@ -33,10 +34,18 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
-        inputRef.current?.focus();
-      }, 300); // Small delay to wait for animation
+        textareaRef.current?.focus();
+      }, 300);
     }
   }, [isOpen]);
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
+    }
+  }, [input]);
 
   useEffect(() => {
     // Generate or retrieve session ID
@@ -104,8 +113,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
       }]);
     } finally {
       setIsLoading(false);
-      // Refocus input after response
-      setTimeout(() => inputRef.current?.focus(), 100);
+      setTimeout(() => textareaRef.current?.focus(), 100);
     }
   };
 
@@ -117,11 +125,11 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   };
 
   return (
-    <div className="chatbot-container">
+    <div className={`chatbot-container ${isLarge ? 'is-large' : ''}`}>
       <AnimatePresence>
         {isOpen && (
           <motion.div 
-            className="chatbot-window"
+            className={`chatbot-window ${isLarge ? 'large' : ''}`}
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
@@ -137,9 +145,18 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                   <div className="chatbot-status">Online</div>
                 </div>
               </div>
-              <button className="chatbot-close" onClick={() => setIsOpen(false)}>
-                <X size={20} />
-              </button>
+              <div className="chatbot-header-actions">
+                <button 
+                  className="chatbot-action-btn" 
+                  onClick={() => setIsLarge(!isLarge)}
+                  title={isLarge ? "Small view" : "Large view"}
+                >
+                  {isLarge ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                </button>
+                <button className="chatbot-action-btn close" onClick={() => setIsOpen(false)}>
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
             <div className="chatbot-messages">
@@ -163,7 +180,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                       </ReactMarkdown>
                     </div>
                   ) : (
-                    msg.content
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
                   )}
                 </motion.div>
               ))}
@@ -180,14 +197,14 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
             </div>
 
             <div className="chatbot-input-area">
-              <input
-                ref={inputRef}
-                type="text"
-                className="chatbot-input"
+              <textarea
+                ref={textareaRef}
+                className="chatbot-textarea"
                 placeholder="Type your message..."
+                rows={1}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 disabled={isLoading}
               />
               <button 
