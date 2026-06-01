@@ -52,7 +52,7 @@ function App() {
 
         <div className="cta-wrapper">
           <button className="chat-trigger-btn" onClick={toggleChat}>
-            Plan Your Trip with Maya AI
+            Plan Your Trip with Emma AI
           </button>
         </div>
       </main>

@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   color: var(--white);
-  padding: 2rem;
+  padding: 1.5rem;
   position: relative;
   overflow-x: hidden;
 }
@@ -28,11 +28,13 @@
 
 .content-wrapper {
   max-width: 800px;
+  width: 100%;
   text-align: center;
   background: rgba(0, 0, 0, 0.3);
-  padding: 4rem 2rem;
+  padding: 4rem 2.5rem;
   border-radius: 30px;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
@@ -42,6 +44,7 @@
   margin-bottom: 0.5rem;
   color: var(--white);
   letter-spacing: -1px;
+  line-height: 1.15;
 }
 
 .tagline {
@@ -84,7 +87,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1rem;
   padding: 0;
 }
 
@@ -93,7 +96,14 @@
   padding: 0.5rem 1.5rem;
   border-radius: 50px;
   font-weight: 500;
+  font-size: 0.95rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.services-list li:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 .cta-wrapper {
@@ -111,6 +121,8 @@
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3);
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .chat-trigger-btn:hover {
@@ -123,14 +135,143 @@
   margin-top: 4rem;
   opacity: 0.6;
   font-size: 0.9rem;
+  text-align: center;
+  padding: 0 1rem;
 }
 
-@media (max-width: 600px) {
-  .brand-header h1 {
-    font-size: 2.5rem;
+/* === Responsive Breakpoints === */
+
+@media (max-width: 768px) {
+  .simple-app {
+    padding: 1rem;
   }
-  
+
   .content-wrapper {
-    padding: 2rem 1rem;
+    padding: 2.5rem 1.5rem;
+    border-radius: 24px;
+  }
+
+  .brand-header h1 {
+    font-size: 2.75rem;
+  }
+
+  .tagline {
+    font-size: 1rem;
+    letter-spacing: 2px;
+    margin-bottom: 2.5rem;
+  }
+
+  .story-section h2 {
+    font-size: 1.65rem;
+  }
+
+  .story-section p {
+    font-size: 1rem;
+    text-align: left;
+  }
+
+  .services-list ul {
+    gap: 0.75rem;
+  }
+
+  .services-list li {
+    font-size: 0.9rem;
+    padding: 0.4rem 1.2rem;
+  }
+
+  .chat-trigger-btn {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .simple-app {
+    padding: 0.75rem;
+    justify-content: flex-start;
+    padding-top: 2rem;
+  }
+
+  .content-wrapper {
+    padding: 2rem 1.25rem;
+    border-radius: 20px;
+  }
+
+  .brand-header h1 {
+    font-size: 2rem;
+  }
+
+  .tagline {
+    font-size: 0.85rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 2rem;
+  }
+
+  .story-section h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .story-section p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .emphasis {
+    font-size: 1.05rem !important;
+    margin-top: 1.5rem;
+  }
+
+  .services-list {
+    margin: 2rem 0;
+  }
+
+  .services-list ul {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .services-list li {
+    font-size: 0.85rem;
+    padding: 0.5rem 1.5rem;
+    width: 100%;
+    max-width: 260px;
+    text-align: center;
+  }
+
+  .cta-wrapper {
+    margin-top: 1.5rem;
+  }
+
+  .chat-trigger-btn {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.9rem 1.5rem;
+    font-size: 0.95rem;
+    box-shadow: 0 8px 16px rgba(0, 184, 148, 0.3);
+  }
+
+  .simple-footer {
+    margin-top: 2.5rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .content-wrapper {
+    padding: 1.5rem 1rem;
+    border-radius: 16px;
+  }
+
+  .brand-header h1 {
+    font-size: 1.7rem;
+  }
+
+  .story-section p {
+    font-size: 0.9rem;
   }
 }

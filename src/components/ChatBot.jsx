@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, X, MessageCircle, User, Bot, Loader2, Maximize2, Minimize2 } from 'lucide-react';
+import { Send, X, MessageCircle, User, Copy, Check, Maximize2, Minimize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import './ChatBot.css';
-
-const WEBHOOK_URL = 'https://costarica.app.n8n.cloud/webhook/maya-chat';
 
 const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +11,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
     { 
       id: '1', 
       type: 'bot', 
-      content: '¡Hola! I am Maya, your Costa Rica travel assistant. How can I help you plan your perfect trip today?' 
+      content: '¡Hola! I am Emma, your Costa Rica travel assistant. How can I help you plan your perfect trip today?' 
     }
   ]);
   const [input, setInput] = useState('');
@@ -21,6 +19,31 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const [sessionId, setSessionId] = useState('');
+  const [isTestMode, setIsTestMode] = useState(false);
+  const [copiedId, setCopiedId] = useState(null);
+
+  const PRODUCTION_URL = 'https://orunroy.app.n8n.cloud/webhook/crtt-emma';
+  const TEST_URL = 'https://orunroy.app.n8n.cloud/webhook-test/crtt-emma';
+
+  const webhookUrl = isTestMode ? TEST_URL : PRODUCTION_URL;
+
+  const resetChat = () => {
+    const newSessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    localStorage.setItem('chat_session_id', newSessionId);
+    setSessionId(newSessionId);
+    setMessages([
+      {
+        id: Date.now().toString(),
+        type: 'bot',
+        content: '¡Hola! I am Emma, your Costa Rica travel assistant. How can I help you plan your perfect trip today?'
+      }
+    ]);
+  };
+
+  const toggleMode = () => {
+    setIsTestMode(prev => !prev);
+    resetChat();
+  };
 
   // Handle external trigger
   useEffect(() => {
@@ -79,7 +102,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(WEBHOOK_URL, {
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,12 +118,27 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
         throw new Error('Failed to get response');
       }
 
-      const data = await response.text();
+      const rawText = await response.text();
+      let replyText = rawText;
+
+      // Try to parse JSON responses from n8n webhook
+      try {
+        const parsed = JSON.parse(rawText);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Array format: extract message or response from first item
+          replyText = parsed[0].message || parsed[0].response || replyText;
+        } else if (typeof parsed === 'object') {
+          // Object format: extract message or response field
+          replyText = parsed.message || parsed.response || replyText;
+        }
+      } catch {
+        // Not JSON, use raw text as-is
+      }
       
       const botMessage = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
-        content: data || "I'm sorry, I couldn't process that. Please try again."
+        content: replyText || "I'm sorry, I couldn't process that. Please try again."
       };
 
       setMessages(prev => [...prev, botMessage]);
@@ -138,14 +176,26 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
             <div className="chatbot-header">
               <div className="chatbot-header-info">
                 <div className="chatbot-avatar">
-                  <Bot size={24} />
+                  <img src="/emma-crtt.jpeg" alt="Emma" className="chatbot-avatar-img" />
                 </div>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Maya AI</h3>
-                  <div className="chatbot-status">Online</div>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Emma AI</h3>
+                  <div className="chatbot-status">
+                    {isTestMode ? 'Test Mode' : 'Online'}
+                    <span className={`mode-badge ${isTestMode ? 'test' : 'production'}`}>
+                      {isTestMode ? 'TEST' : 'LIVE'}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="chatbot-header-actions">
+                <button
+                  className={`chatbot-action-btn mode-toggle ${isTestMode ? 'test' : 'production'}`}
+                  onClick={toggleMode}
+                  title={isTestMode ? 'Switch to Production' : 'Switch to Test Mode'}
+                >
+                  {isTestMode ? '🔬' : '🚀'}
+                </button>
                 <button 
                   className="chatbot-action-btn" 
                   onClick={() => setIsLarge(!isLarge)}
@@ -168,17 +218,30 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                   animate={{ opacity: 1, x: 0 }}
                 >
                   {msg.type === 'bot' ? (
-                    <div className="markdown-content">
-                      <ReactMarkdown
-                        components={{
-                          a: ({ node, ...props }) => (
-                            <a {...props} target="_blank" rel="noopener noreferrer" />
-                          ),
+                    <>
+                      <div className="markdown-content">
+                        <ReactMarkdown
+                          components={{
+                            a: ({ node, ...props }) => (
+                              <a {...props} target="_blank" rel="noopener noreferrer" />
+                            ),
+                          }}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
+                      </div>
+                      <button
+                        className={`message-copy-btn ${copiedId === msg.id ? 'copied' : ''}`}
+                        onClick={() => {
+                          navigator.clipboard.writeText(msg.content);
+                          setCopiedId(msg.id);
+                          setTimeout(() => setCopiedId(null), 2000);
                         }}
+                        title="Copy message"
                       >
-                        {msg.content}
-                      </ReactMarkdown>
-                    </div>
+                        {copiedId === msg.id ? <Check size={14} /> : <Copy size={14} />}
+                      </button>
+                    </>
                   ) : (
                     <div style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
                   )}
@@ -212,7 +275,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                 onClick={handleSend}
                 disabled={isLoading || !input.trim()}
               >
-                {isLoading ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
+                <Send size={20} />
               </button>
             </div>
           </motion.div>
