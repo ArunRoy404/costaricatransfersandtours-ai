@@ -21,6 +21,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [sessionId, setSessionId] = useState('');
   const [isTestMode, setIsTestMode] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const PRODUCTION_URL = 'https://orunroy.app.n8n.cloud/webhook/crtt-emma';
   const TEST_URL = 'https://orunroy.app.n8n.cloud/webhook-test/crtt-emma';
@@ -97,9 +98,12 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
       content: input.trim()
     };
 
+    const sentContent = input.trim();
+
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
+    setErrorMsg('');
 
     try {
       const response = await fetch(webhookUrl, {
@@ -135,20 +139,21 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
         // Not JSON, use raw text as-is
       }
       
-      const botMessage = {
-        id: (Date.now() + 1).toString(),
-        type: 'bot',
-        content: replyText || "I'm sorry, I couldn't process that. Please try again."
-      };
-
-      setMessages(prev => [...prev, botMessage]);
+      if (!replyText) {
+        setErrorMsg('Failed to get a response. Please try again.');
+        setInput(sentContent);
+      } else {
+        const botMessage = {
+          id: (Date.now() + 1).toString(),
+          type: 'bot',
+          content: replyText
+        };
+        setMessages(prev => [...prev, botMessage]);
+      }
     } catch (error) {
       console.error('Chat error:', error);
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        type: 'bot',
-        content: "I'm having a bit of trouble connecting. Please check your internet or try again later!"
-      }]);
+      setErrorMsg('Connection error. Please check your internet and try again.');
+      setInput(sentContent);
     } finally {
       setIsLoading(false);
       setTimeout(() => textareaRef.current?.focus(), 100);
@@ -179,7 +184,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                   <img src="/emma-crtt.jpeg" alt="Emma" className="chatbot-avatar-img" />
                 </div>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Emma AI</h3>
+                  <h3 style={{ margin: 0, fontSize: '1rem' }}>Emma AI</h3>
                   <div className="chatbot-status">
                     {isTestMode ? 'Test Mode' : 'Online'}
                     <span className={`mode-badge ${isTestMode ? 'test' : 'production'}`}>
@@ -243,7 +248,20 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                       </button>
                     </>
                   ) : (
-                    <div style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
+                    <>
+                      <div style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
+                      <button
+                        className={`message-copy-btn ${copiedId === msg.id ? 'copied' : ''}`}
+                        onClick={() => {
+                          navigator.clipboard.writeText(msg.content);
+                          setCopiedId(msg.id);
+                          setTimeout(() => setCopiedId(null), 2000);
+                        }}
+                        title="Copy message"
+                      >
+                        {copiedId === msg.id ? <Check size={14} /> : <Copy size={14} />}
+                      </button>
+                    </>
                   )}
                 </motion.div>
               ))}
@@ -260,23 +278,28 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
             </div>
 
             <div className="chatbot-input-area">
-              <textarea
-                ref={textareaRef}
-                className="chatbot-textarea"
-                placeholder="Type your message..."
-                rows={1}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyPress}
-                disabled={isLoading}
-              />
-              <button 
-                className="chatbot-send" 
-                onClick={handleSend}
-                disabled={isLoading || !input.trim()}
-              >
-                <Send size={20} />
-              </button>
+              {errorMsg && (
+                <div className="chatbot-error-msg">{errorMsg}</div>
+              )}
+              <div className="chatbot-input-row">
+                <textarea
+                  ref={textareaRef}
+                  className="chatbot-textarea"
+                  placeholder="Type your message..."
+                  rows={1}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  disabled={isLoading}
+                />
+                <button 
+                  className="chatbot-send" 
+                  onClick={handleSend}
+                  disabled={isLoading || !input.trim()}
+                >
+                  <Send size={18} />
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
