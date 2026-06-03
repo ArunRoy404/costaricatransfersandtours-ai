@@ -23,8 +23,8 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [copiedId, setCopiedId] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const PRODUCTION_URL = 'https://orunroy.app.n8n.cloud/webhook/crtt-emma';
-  const TEST_URL = 'https://orunroy.app.n8n.cloud/webhook-test/crtt-emma';
+  const PRODUCTION_URL = 'https://n8n.costaricatransferssandtours.com/webhook/crtt-emma';
+  const TEST_URL = 'https://n8n.costaricatransferssandtours.com/webhook-test/crtt-emma';
 
   const webhookUrl = isTestMode ? TEST_URL : PRODUCTION_URL;
 
