@@ -1,8 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Send, X, MessageCircle, User, Copy, Check, Maximize2, Minimize2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Send, X, MessageCircle, Copy, Check, Maximize2, Minimize2, FlaskConical, Radio } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import './ChatBot.css';
+
+const createSessionId = () => (
+  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+);
+
+const getInitialSessionId = () => {
+  const storedSessionId = localStorage.getItem('chat_session_id');
+  if (storedSessionId) return storedSessionId;
+
+  const newSessionId = createSessionId();
+  localStorage.setItem('chat_session_id', newSessionId);
+  return newSessionId;
+};
 
 const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,7 +31,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
-  const [sessionId, setSessionId] = useState('');
+  const [sessionId, setSessionId] = useState(getInitialSessionId);
   const [isTestMode, setIsTestMode] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -29,7 +42,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const webhookUrl = isTestMode ? TEST_URL : PRODUCTION_URL;
 
   const resetChat = () => {
-    const newSessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const newSessionId = createSessionId();
     localStorage.setItem('chat_session_id', newSessionId);
     setSessionId(newSessionId);
     setMessages([
@@ -49,8 +62,12 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   // Handle external trigger
   useEffect(() => {
     if (externalOpen) {
-      setIsOpen(true);
-      if (setExternalOpen) setExternalOpen(false);
+      const timer = setTimeout(() => {
+        setIsOpen(true);
+        if (setExternalOpen) setExternalOpen(false);
+      }, 0);
+
+      return () => clearTimeout(timer);
     }
   }, [externalOpen, setExternalOpen]);
 
@@ -70,16 +87,6 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
     }
   }, [input]);
-
-  useEffect(() => {
-    // Generate or retrieve session ID
-    let storedSessionId = localStorage.getItem('chat_session_id');
-    if (!storedSessionId) {
-      storedSessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      localStorage.setItem('chat_session_id', storedSessionId);
-    }
-    setSessionId(storedSessionId);
-  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -140,6 +147,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
       }
       
       if (!replyText) {
+        setMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
         setErrorMsg('Failed to get a response. Please try again.');
         setInput(sentContent);
       } else {
@@ -152,6 +160,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
       }
     } catch (error) {
       console.error('Chat error:', error);
+      setMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
       setErrorMsg('Connection error. Please check your internet and try again.');
       setInput(sentContent);
     } finally {
@@ -183,8 +192,8 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                 <div className="chatbot-avatar">
                   <img src="/emma-crtt.jpeg" alt="Emma" className="chatbot-avatar-img" />
                 </div>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '1rem' }}>Emma AI</h3>
+                <div className="chatbot-title-block">
+                  <h3>Emma AI</h3>
                   <div className="chatbot-status">
                     {isTestMode ? 'Test Mode' : 'Online'}
                     <span className={`mode-badge ${isTestMode ? 'test' : 'production'}`}>
@@ -198,17 +207,19 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                   className={`chatbot-action-btn mode-toggle ${isTestMode ? 'test' : 'production'}`}
                   onClick={toggleMode}
                   title={isTestMode ? 'Switch to Production' : 'Switch to Test Mode'}
+                  aria-label={isTestMode ? 'Switch to Production' : 'Switch to Test Mode'}
                 >
-                  {isTestMode ? '🔬' : '🚀'}
+                  {isTestMode ? <FlaskConical size={17} /> : <Radio size={17} />}
                 </button>
                 <button 
                   className="chatbot-action-btn" 
                   onClick={() => setIsLarge(!isLarge)}
                   title={isLarge ? "Small view" : "Large view"}
+                  aria-label={isLarge ? "Small view" : "Large view"}
                 >
                   {isLarge ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
                 </button>
-                <button className="chatbot-action-btn close" onClick={() => setIsOpen(false)}>
+                <button className="chatbot-action-btn close" onClick={() => setIsOpen(false)} aria-label="Close chat">
                   <X size={20} />
                 </button>
               </div>
@@ -228,8 +239,13 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                         <ReactMarkdown
                           components={{
                             a: ({ node, ...props }) => (
-                              <a {...props} target="_blank" rel="noopener noreferrer" />
-                            ),
+                              <a
+                                {...props}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                data-node-type={node?.type}
+                              />
+                            )
                           }}
                         >
                           {msg.content}
@@ -296,6 +312,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                   className="chatbot-send" 
                   onClick={handleSend}
                   disabled={isLoading || !input.trim()}
+                  aria-label="Send message"
                 >
                   <Send size={18} />
                 </button>
@@ -305,7 +322,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
         )}
       </AnimatePresence>
 
-      <button className="chatbot-toggle" onClick={() => setIsOpen(!isOpen)}>
+      <button className="chatbot-toggle" onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Close chat' : 'Open chat'}>
         {isOpen ? <X size={28} /> : <MessageCircle size={28} />}
       </button>
     </div>
