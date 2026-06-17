@@ -24,7 +24,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
     { 
       id: '1', 
       type: 'bot', 
-      content: '¡Hola! I am Emma, your Costa Rica travel assistant. How can I help you plan your perfect trip today?' 
+      content: 'Hola! I’m New, your dedicated Costa Rica tours & transportation specialist. How can I help you plan your perfect trip today?' 
     }
   ]);
   const [input, setInput] = useState('');
@@ -36,8 +36,8 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [copiedId, setCopiedId] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const PRODUCTION_URL = 'https://emma.costaricatransfersandtours.com/webhook/crtt-emma';
-  const TEST_URL = 'https://emma.costaricatransfersandtours.com/webhook-test/crtt-emma';
+  const PRODUCTION_URL = 'https://orunroy.app.n8n.cloud/webhook/7b7486f4-381a-42ac-baa6-4b78ff4346b1';
+  const TEST_URL = 'https://orunroy.app.n8n.cloud/webhook-test/7b7486f4-381a-42ac-baa6-4b78ff4346b1';
 
   const webhookUrl = isTestMode ? TEST_URL : PRODUCTION_URL;
 
@@ -49,7 +49,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
       {
         id: Date.now().toString(),
         type: 'bot',
-        content: '¡Hola! I am Emma, your Costa Rica travel assistant. How can I help you plan your perfect trip today?'
+        content: '¡Hola! I am Neo, your Costa Rica travel assistant. How can I help you plan your perfect trip today?'
       }
     ]);
   };
@@ -190,10 +190,10 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
             <div className="chatbot-header">
               <div className="chatbot-header-info">
                 <div className="chatbot-avatar">
-                  <img src="/emma-crtt.jpeg" alt="Emma" className="chatbot-avatar-img" />
+                  <img src="/neo-crtt.jpeg" alt="Neo" className="chatbot-avatar-img" />
                 </div>
                 <div className="chatbot-title-block">
-                  <h3>Emma AI</h3>
+                  <h3>Neo AI</h3>
                   <div className="chatbot-status">
                     {isTestMode ? 'Test Mode' : 'Online'}
                     <span className={`mode-badge ${isTestMode ? 'test' : 'production'}`}>

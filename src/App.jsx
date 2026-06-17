@@ -68,7 +68,7 @@ function App() {
 
         <div className="cta-wrapper">
           <button className="chat-trigger-btn" onClick={toggleChat}>
-            <span>Plan Your Trip with Emma AI</span>
+            <span>Plan Your Trip with Neo AI</span>
           </button>
         </div>
       </main>
