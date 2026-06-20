@@ -36,8 +36,8 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [copiedId, setCopiedId] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const PRODUCTION_URL = 'https://orunroy.app.n8n.cloud/webhook/7b7486f4-381a-42ac-baa6-4b78ff4346b1';
-  const TEST_URL = 'https://orunroy.app.n8n.cloud/webhook-test/7b7486f4-381a-42ac-baa6-4b78ff4346b1';
+  const PRODUCTION_URL = 'https://orunroy.app.n8n.cloud/webhook/neo';
+  const TEST_URL = 'https://orunroy.app.n8n.cloud/webhook-test/neo';
 
   const webhookUrl = isTestMode ? TEST_URL : PRODUCTION_URL;
 
