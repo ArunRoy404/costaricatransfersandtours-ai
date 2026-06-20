@@ -36,8 +36,8 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [copiedId, setCopiedId] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const PRODUCTION_URL = 'https://emma.costaricatransfersandtours.com/webhook/neo';
-  const TEST_URL = 'https://emma.costaricatransfersandtours.com/webhook-test/neo';
+  const PRODUCTION_URL = 'https://ai.costaricatransfersandtours.com/webhook/neo';
+  const TEST_URL = 'https://ai.costaricatransfersandtours.com/webhook-test/neo';
 
   const webhookUrl = isTestMode ? TEST_URL : PRODUCTION_URL;
 
