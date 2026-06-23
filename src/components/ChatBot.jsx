@@ -17,6 +17,8 @@ const getInitialSessionId = () => {
   return newSessionId;
 };
 
+import QuickActions from './QuickActions';
+
 const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLarge, setIsLarge] = useState(false);
@@ -24,7 +26,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
     { 
       id: '1', 
       type: 'bot', 
-      content: 'Hola! I’m New, your dedicated Costa Rica tours & transportation specialist. How can I help you plan your perfect trip today?' 
+      content: 'Hola! I\u2019m Neo, your dedicated Costa Rica tours & transportation specialist. How can I help you plan your perfect trip today?' 
     }
   ]);
   const [input, setInput] = useState('');
@@ -41,6 +43,8 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
 
   const webhookUrl = isTestMode ? TEST_URL : PRODUCTION_URL;
 
+  const hasUserMessages = messages.some(m => m.type === 'user');
+
   const resetChat = () => {
     const newSessionId = createSessionId();
     localStorage.setItem('chat_session_id', newSessionId);
@@ -49,7 +53,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
       {
         id: Date.now().toString(),
         type: 'bot',
-        content: '¡Hola! I am Neo, your Costa Rica travel assistant. How can I help you plan your perfect trip today?'
+        content: '\u00A1Hola! I am Neo, your Costa Rica travel assistant. How can I help you plan your perfect trip today?'
       }
     ]);
   };
@@ -96,19 +100,17 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
-
+  const sendMessageToWebhook = async (chatInput, action) => {
     const userMessage = {
       id: Date.now().toString(),
       type: 'user',
-      content: input.trim()
+      content: chatInput
     };
 
-    const sentContent = input.trim();
-
     setMessages(prev => [...prev, userMessage]);
-    setInput('');
+    if (action !== 'quickAction') {
+      setInput('');
+    }
     setIsLoading(true);
     setErrorMsg('');
 
@@ -119,8 +121,8 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          action: 'sendMessage',
-          chatInput: userMessage.content,
+          action: action,
+          chatInput: chatInput,
           sessionId: sessionId
         }),
       });
@@ -149,7 +151,9 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
       if (!replyText) {
         setMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
         setErrorMsg('Failed to get a response. Please try again.');
-        setInput(sentContent);
+        if (action === 'sendMessage') {
+          setInput(chatInput);
+        }
       } else {
         const botMessage = {
           id: (Date.now() + 1).toString(),
@@ -162,11 +166,23 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
       console.error('Chat error:', error);
       setMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
       setErrorMsg('Connection error. Please check your internet and try again.');
-      setInput(sentContent);
+      if (action === 'sendMessage') {
+        setInput(chatInput);
+      }
     } finally {
       setIsLoading(false);
       setTimeout(() => textareaRef.current?.focus(), 100);
     }
+  };
+
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return;
+    await sendMessageToWebhook(input.trim(), 'sendMessage');
+  };
+
+  const handleQuickAction = async (chatInput) => {
+    if (isLoading) return;
+    await sendMessageToWebhook(chatInput, 'quickAction');
   };
 
   const handleKeyPress = (e) => {
@@ -281,6 +297,9 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                   )}
                 </motion.div>
               ))}
+              {!hasUserMessages && !isLoading && (
+                <QuickActions onQuickAction={handleQuickAction} isLoading={isLoading} />
+              )}
               {isLoading && (
                 <div className="message message-bot">
                   <div className="typing-indicator">
