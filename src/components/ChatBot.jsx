@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Send, X, MessageCircle, Copy, Check, Maximize2, Minimize2, FlaskConical, Radio } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
+import DOMPurify from 'dompurify';
 import './ChatBot.css';
 
 const createSessionId = () => (
@@ -18,6 +19,10 @@ const getInitialSessionId = () => {
 };
 
 import QuickActions from './QuickActions';
+
+const HAS_HTML_RE = /<[a-z][\s\S]*>/i;
+
+const isHtmlContent = (str) => HAS_HTML_RE.test(str);
 
 const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -251,22 +256,29 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                 >
                   {msg.type === 'bot' ? (
                     <>
-                      <div className="markdown-content">
-                        <ReactMarkdown
-                          components={{
-                            a: ({ node, ...props }) => (
-                              <a
-                                {...props}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                data-node-type={node?.type}
-                              />
-                            )
-                          }}
-                        >
-                          {msg.content}
-                        </ReactMarkdown>
-                      </div>
+                      {isHtmlContent(msg.content) ? (
+                        <div
+                          className="html-content"
+                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(msg.content, { ADD_ATTR: ['target', 'rel'] }) }}
+                        />
+                      ) : (
+                        <div className="markdown-content">
+                          <ReactMarkdown
+                            components={{
+                              a: ({ node, ...props }) => (
+                                <a
+                                  {...props}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  data-node-type={node?.type}
+                                />
+                              )
+                            }}
+                          >
+                            {msg.content}
+                          </ReactMarkdown>
+                        </div>
+                      )}
                       <button
                         className={`message-copy-btn ${copiedId === msg.id ? 'copied' : ''}`}
                         onClick={() => {

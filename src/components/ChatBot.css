@@ -303,6 +303,12 @@
   border-color: rgba(0, 184, 148, 0.35);
 }
 
+.markdown-content {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
 .markdown-content p {
   margin: 0 0 0.75rem;
 }
@@ -331,6 +337,138 @@
 .markdown-content strong {
   font-weight: 800;
 }
+
+/* ── HTML content (from n8n webhook) ── */
+.html-content {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.html-content p {
+  margin: 0 0 0.75rem;
+}
+
+.html-content p:last-child {
+  margin-bottom: 0;
+}
+
+.html-content ul,
+.html-content ol {
+  margin: 0.55rem 0;
+  padding-left: 1.2rem;
+}
+
+.html-content li {
+  margin-bottom: 0.35rem;
+}
+
+.html-content a {
+  color: var(--chat-secondary);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.html-content strong {
+  font-weight: 800;
+}
+
+.html-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin: 0.6rem 0;
+}
+
+.html-content table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-collapse: collapse;
+  margin: 0.6rem 0;
+  font-size: 0.84rem;
+}
+
+.html-content table th,
+.html-content table td {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid rgba(18, 32, 30, 0.12);
+  text-align: left;
+  vertical-align: top;
+}
+
+.html-content table th {
+  font-weight: 700;
+  background: rgba(0, 184, 148, 0.08);
+}
+
+.html-content table tr:nth-child(even) {
+  background: rgba(18, 32, 30, 0.03);
+}
+
+.html-content pre {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  background: rgba(18, 32, 30, 0.06);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  white-space: pre;
+  word-break: normal;
+  word-wrap: normal;
+  margin: 0.6rem 0;
+}
+
+.html-content code {
+  font-size: 0.86em;
+  padding: 0.15em 0.35em;
+  border-radius: 5px;
+  background: rgba(18, 32, 30, 0.07);
+  word-break: break-word;
+}
+
+.html-content pre code {
+  padding: 0;
+  background: none;
+  word-break: normal;
+  white-space: pre;
+}
+
+.html-content blockquote {
+  margin: 0.6rem 0;
+  padding: 0.45rem 0.7rem 0.45rem 0.9rem;
+  border-left: 4px solid var(--chat-primary);
+  background: rgba(0, 184, 148, 0.06);
+  border-radius: 0 8px 8px 0;
+  color: var(--chat-muted);
+}
+
+.html-content hr {
+  margin: 0.8rem 0;
+  border: 0;
+  height: 1px;
+  background: rgba(18, 32, 30, 0.1);
+}
+
+.html-content h1,
+.html-content h2,
+.html-content h3,
+.html-content h4 {
+  margin: 0.8rem 0 0.4rem;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.html-content h1 { font-size: 1.15rem; }
+.html-content h2 { font-size: 1.05rem; }
+.html-content h3 { font-size: 0.98rem; }
+.html-content h4 { font-size: 0.93rem; }
 
 .chatbot-input-area {
   padding: 0.95rem 1rem 1rem;
