@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, X, MessageCircle, Copy, Check, Maximize2, Minimize2, FlaskConical, Radio } from 'lucide-react';
+import { Send, X, MessageCircle, Copy, Check, Maximize2, Minimize2, FlaskConical, Radio, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import DOMPurify from 'dompurify';
@@ -210,8 +210,8 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
           >
             <div className="chatbot-header">
               <div className="chatbot-header-info">
-                <div className="chatbot-avatar">
-                  <img src="/neo-crtt.jpeg" alt="Neo" className="chatbot-avatar-img" />
+                <div className="chatbot-avatar" aria-label="Neo AI Bot">
+                  <Bot size={25} className="chatbot-avatar-icon" />
                 </div>
                 <div className="chatbot-title-block">
                   <h3>Neo AI</h3>

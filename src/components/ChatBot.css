@@ -118,14 +118,27 @@
 
 .chatbot-avatar {
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   flex: 0 0 auto;
   overflow: hidden;
-  border-radius: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.68);
-  background: rgba(255, 255, 255, 0.22);
-  box-shadow: 0 12px 24px rgba(0, 39, 33, 0.22);
+  border-radius: 14px;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 20px rgba(0, 39, 33, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.chatbot-avatar-icon {
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .chatbot-avatar-img {
