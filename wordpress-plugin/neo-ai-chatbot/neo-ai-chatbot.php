@@ -133,18 +133,30 @@ function neo_chatbot_register_settings() {
 add_action('admin_init', 'neo_chatbot_register_settings');
 
 /**
- * Add Admin Menu Item under Settings
+ * Add Admin Menu Item as a prominent top-level sidebar menu
  */
 function neo_chatbot_add_admin_menu() {
-    add_options_page(
-        'Neo AI Chatbot Settings',
+    add_menu_page(
+        'Neo AI Chatbot',
         'Neo AI Chatbot',
         'manage_options',
         'neo-ai-chatbot',
-        'neo_chatbot_render_admin_page'
+        'neo_chatbot_render_admin_page',
+        'dashicons-format-chat',
+        26
     );
 }
 add_action('admin_menu', 'neo_chatbot_add_admin_menu');
+
+/**
+ * Add 'Settings' action link on the Plugins list page
+ */
+function neo_chatbot_plugin_action_links($links) {
+    $settings_link = '<a href="' . esc_url(admin_url('admin.php?page=neo-ai-chatbot')) . '" style="font-weight:600; color:#00b894;">' . __('Settings', 'neo-ai-chatbot') . '</a>';
+    array_unshift($links, $settings_link);
+    return $links;
+}
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'neo_chatbot_plugin_action_links');
 
 /**
  * Render Settings Page in WP Admin
