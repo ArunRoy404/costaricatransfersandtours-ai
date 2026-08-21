@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:widget": "vite build --config vite.config.widget.js",
+    "package:plugin": "node scripts/package-plugin.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

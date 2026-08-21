@@ -25,13 +25,19 @@ const HAS_HTML_RE = /<[a-z][\s\S]*>/i;
 const isHtmlContent = (str) => HAS_HTML_RE.test(str);
 
 const ChatBot = ({ externalOpen, setExternalOpen }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const wpConfig = typeof window !== 'undefined' ? (window.NeoChatbotConfig || {}) : {};
+  const PRODUCTION_URL = wpConfig.productionUrl || 'https://ai.costaricatransfersandtours.com/webhook/neo';
+  const TEST_URL = wpConfig.testUrl || 'https://ai.costaricatransfersandtours.com/webhook-test/neo';
+  const botName = wpConfig.botName || 'Neo AI';
+  const defaultGreeting = wpConfig.greeting || 'Hola! I\u2019m Neo, your dedicated Costa Rica tours & transportation specialist. How can I help you plan your perfect trip today?';
+
+  const [isOpen, setIsOpen] = useState(Boolean(wpConfig.initialOpen));
   const [isLarge, setIsLarge] = useState(false);
   const [messages, setMessages] = useState([
     { 
       id: '1', 
       type: 'bot', 
-      content: 'Hola! I\u2019m Neo, your dedicated Costa Rica tours & transportation specialist. How can I help you plan your perfect trip today?' 
+      content: defaultGreeting 
     }
   ]);
   const [input, setInput] = useState('');
@@ -39,12 +45,9 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const [sessionId, setSessionId] = useState(getInitialSessionId);
-  const [isTestMode, setIsTestMode] = useState(false);
+  const [isTestMode, setIsTestMode] = useState(() => wpConfig.defaultMode === 'test');
   const [copiedId, setCopiedId] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
-
-  const PRODUCTION_URL = 'https://ai.costaricatransfersandtours.com/webhook/neo';
-  const TEST_URL = 'https://ai.costaricatransfersandtours.com/webhook-test/neo';
 
   const webhookUrl = isTestMode ? TEST_URL : PRODUCTION_URL;
 
@@ -58,7 +61,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
       {
         id: Date.now().toString(),
         type: 'bot',
-        content: '\u00A1Hola! I am Neo, your Costa Rica travel assistant. How can I help you plan your perfect trip today?'
+        content: defaultGreeting
       }
     ]);
   };
@@ -214,7 +217,7 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                   <Bot size={25} className="chatbot-avatar-icon" />
                 </div>
                 <div className="chatbot-title-block">
-                  <h3>Neo AI</h3>
+                  <h3>{botName}</h3>
                   <div className="chatbot-status">
                     {isTestMode ? 'Test Mode' : 'Online'}
                     <span className={`mode-badge ${isTestMode ? 'test' : 'production'}`}>
