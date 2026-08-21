@@ -46,7 +46,7 @@ function NeoChatbotWidget() {
     };
   }, []);
 
-  return <ChatBot externalOpen={isOpen} setExternalOpen={setIsOpen} />;
+  return <ChatBot externalOpen={isOpen} setExternalOpen={setIsOpen} showModeToggle={false} />;
 }
 
 function initNeoChatbot() {

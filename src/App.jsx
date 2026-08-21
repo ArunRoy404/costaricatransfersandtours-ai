@@ -76,7 +76,7 @@ function App() {
       <footer className="simple-footer">
         <p>&copy; 2026 Costa Rica Transfers & Tours</p>
       </footer>
-      <ChatBot externalOpen={isChatOpen} setExternalOpen={setIsChatOpen} />
+      <ChatBot externalOpen={isChatOpen} setExternalOpen={setIsChatOpen} showModeToggle={true} />
     </div>
   );
 }

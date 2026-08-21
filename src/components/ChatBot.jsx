@@ -24,12 +24,16 @@ const HAS_HTML_RE = /<[a-z][\s\S]*>/i;
 
 const isHtmlContent = (str) => HAS_HTML_RE.test(str);
 
-const ChatBot = ({ externalOpen, setExternalOpen }) => {
+const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
   const wpConfig = typeof window !== 'undefined' ? (window.NeoChatbotConfig || {}) : {};
   const PRODUCTION_URL = wpConfig.productionUrl || 'https://ai.costaricatransfersandtours.com/webhook/neo';
   const TEST_URL = wpConfig.testUrl || 'https://ai.costaricatransfersandtours.com/webhook-test/neo';
   const botName = wpConfig.botName || 'Neo AI';
   const defaultGreeting = wpConfig.greeting || 'Hola! I\u2019m Neo, your dedicated Costa Rica tours & transportation specialist. How can I help you plan your perfect trip today?';
+
+  const isModeToggleVisible = showModeToggle !== undefined 
+    ? Boolean(showModeToggle) 
+    : Boolean(wpConfig.showModeToggle);
 
   const [isOpen, setIsOpen] = useState(Boolean(wpConfig.initialOpen));
   const [isLarge, setIsLarge] = useState(false);
@@ -219,22 +223,26 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                 <div className="chatbot-title-block">
                   <h3>{botName}</h3>
                   <div className="chatbot-status">
-                    {isTestMode ? 'Test Mode' : 'Online'}
-                    <span className={`mode-badge ${isTestMode ? 'test' : 'production'}`}>
-                      {isTestMode ? 'TEST' : 'LIVE'}
-                    </span>
+                    {isModeToggleVisible && isTestMode ? 'Test Mode' : 'Online'}
+                    {isModeToggleVisible && (
+                      <span className={`mode-badge ${isTestMode ? 'test' : 'production'}`}>
+                        {isTestMode ? 'TEST' : 'LIVE'}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
               <div className="chatbot-header-actions">
-                <button
-                  className={`chatbot-action-btn mode-toggle ${isTestMode ? 'test' : 'production'}`}
-                  onClick={toggleMode}
-                  title={isTestMode ? 'Switch to Production' : 'Switch to Test Mode'}
-                  aria-label={isTestMode ? 'Switch to Production' : 'Switch to Test Mode'}
-                >
-                  {isTestMode ? <FlaskConical size={17} /> : <Radio size={17} />}
-                </button>
+                {isModeToggleVisible && (
+                  <button
+                    className={`chatbot-action-btn mode-toggle ${isTestMode ? 'test' : 'production'}`}
+                    onClick={toggleMode}
+                    title={isTestMode ? 'Switch to Production' : 'Switch to Test Mode'}
+                    aria-label={isTestMode ? 'Switch to Production' : 'Switch to Test Mode'}
+                  >
+                    {isTestMode ? <FlaskConical size={17} /> : <Radio size={17} />}
+                  </button>
+                )}
                 <button 
                   className="chatbot-action-btn" 
                   onClick={() => setIsLarge(!isLarge)}
@@ -316,11 +324,11 @@ const ChatBot = ({ externalOpen, setExternalOpen }) => {
                 <QuickActions onQuickAction={handleQuickAction} isLoading={isLoading} />
               )}
               {isLoading && (
-                <div className="message message-bot">
-                  <div className="typing-indicator">
-                    <div className="typing-dot"></div>
-                    <div className="typing-dot"></div>
-                    <div className="typing-dot"></div>
+                <div className="message message-bot message-loading">
+                  <div className="typing-indicator" aria-label="Neo is thinking...">
+                    <span className="typing-dot"></span>
+                    <span className="typing-dot"></span>
+                    <span className="typing-dot"></span>
                   </div>
                 </div>
               )}
