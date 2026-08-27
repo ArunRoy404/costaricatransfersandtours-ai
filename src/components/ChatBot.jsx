@@ -1,9 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, X, MessageCircle, Copy, Check, Maximize2, Minimize2, FlaskConical, Radio, Bot } from 'lucide-react';
+import { Send, X, MessageCircle, Copy, Check, Maximize2, Minimize2, FlaskConical, Radio, Bot, Sparkles, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import DOMPurify from 'dompurify';
 import './ChatBot.css';
+
+// Ensure all links inside sanitized HTML open in a new tab safely
+DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+  if ('target' in node) {
+    node.setAttribute('target', '_blank');
+    node.setAttribute('rel', 'noopener noreferrer');
+  }
+});
+
+let msgCounter = 0;
+const generateMsgId = (prefix = 'msg') => `${prefix}_${Date.now()}_${++msgCounter}`;
 
 const createSessionId = () => (
   Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
@@ -22,7 +33,7 @@ import QuickActions from './QuickActions';
 
 const HAS_HTML_RE = /<[a-z][\s\S]*>/i;
 
-const isHtmlContent = (str) => HAS_HTML_RE.test(str);
+const isHtmlContent = (str) => typeof str === 'string' && HAS_HTML_RE.test(str);
 
 const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
   const wpConfig = typeof window !== 'undefined' ? (window.NeoChatbotConfig || {}) : {};
@@ -41,7 +52,8 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
     { 
       id: '1', 
       type: 'bot', 
-      content: defaultGreeting 
+      content: defaultGreeting,
+      suggestions: []
     }
   ]);
   const [input, setInput] = useState('');
@@ -63,9 +75,10 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
     setSessionId(newSessionId);
     setMessages([
       {
-        id: Date.now().toString(),
+        id: generateMsgId('bot'),
         type: 'bot',
-        content: defaultGreeting
+        content: defaultGreeting,
+        suggestions: []
       }
     ]);
   };
@@ -114,7 +127,7 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
 
   const sendMessageToWebhook = async (chatInput, action) => {
     const userMessage = {
-      id: Date.now().toString(),
+      id: generateMsgId('user'),
       type: 'user',
       content: chatInput
     };
@@ -135,7 +148,8 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
         body: JSON.stringify({
           action: action,
           chatInput: chatInput,
-          sessionId: sessionId
+          sessionId: sessionId,
+          session_id: sessionId
         }),
       });
 
@@ -145,16 +159,31 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
 
       const rawText = await response.text();
       let replyText = rawText;
+      let suggestions = [];
 
       // Try to parse JSON responses from n8n webhook
       try {
         const parsed = JSON.parse(rawText);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // Array format: extract message or response from first item
-          replyText = parsed[0].message || parsed[0].response || replyText;
-        } else if (typeof parsed === 'object') {
-          // Object format: extract message or response field
-          replyText = parsed.message || parsed.response || replyText;
+        const data = Array.isArray(parsed) && parsed.length > 0 
+          ? parsed[0] 
+          : (typeof parsed === 'object' && parsed !== null ? parsed : null);
+
+        if (data) {
+          // Extract reply content (supports html, message, response, text)
+          replyText = data.html || data.message || data.response || data.text || replyText;
+
+          // Extract suggestions (supports ai_suggestions, aiSuggestions, suggestions)
+          const rawSuggestions = data.ai_suggestions || data.aiSuggestions || data.suggestions;
+          if (Array.isArray(rawSuggestions)) {
+            suggestions = rawSuggestions.filter(item => typeof item === 'string' && item.trim().length > 0);
+          }
+
+          // Extract and sync session_id
+          const newSessionId = data.session_id || data.sessionId;
+          if (newSessionId && typeof newSessionId === 'string') {
+            setSessionId(newSessionId);
+            localStorage.setItem('chat_session_id', newSessionId);
+          }
         }
       } catch {
         // Not JSON, use raw text as-is
@@ -168,9 +197,10 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
         }
       } else {
         const botMessage = {
-          id: (Date.now() + 1).toString(),
+          id: generateMsgId('bot'),
           type: 'bot',
-          content: replyText
+          content: replyText,
+          suggestions: suggestions
         };
         setMessages(prev => [...prev, botMessage]);
       }
@@ -195,6 +225,11 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
   const handleQuickAction = async (chatInput) => {
     if (isLoading) return;
     await sendMessageToWebhook(chatInput, 'quickAction');
+  };
+
+  const handleSuggestionClick = async (suggestionText) => {
+    if (isLoading || !suggestionText) return;
+    await sendMessageToWebhook(suggestionText, 'sendMessage');
   };
 
   const handleKeyPress = (e) => {
@@ -258,77 +293,125 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
             </div>
 
             <div className="chatbot-messages">
-              {messages.map((msg) => (
-                <motion.div 
-                  key={msg.id}
-                  className={`message message-${msg.type}`}
-                  initial={{ opacity: 0, x: msg.type === 'user' ? 10 : -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                >
-                  {msg.type === 'bot' ? (
-                    <>
-                      {isHtmlContent(msg.content) ? (
-                        <div
-                          className="html-content"
-                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(msg.content, { ADD_ATTR: ['target', 'rel'] }) }}
-                        />
-                      ) : (
-                        <div className="markdown-content">
-                          <ReactMarkdown
-                            components={{
-                              a: ({ node, ...props }) => (
-                                <a
-                                  {...props}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  data-node-type={node?.type}
-                                />
-                              )
+              {messages.map((msg, index) => {
+                const isBot = msg.type === 'bot';
+                const isLastBotMsg = isBot && !messages.slice(index + 1).some(m => m.type === 'bot');
+
+                return (
+                  <div key={msg.id} className={`message-group message-group-${msg.type}`}>
+                    <motion.div 
+                      className={`message message-${msg.type}`}
+                      initial={{ opacity: 0, x: msg.type === 'user' ? 10 : -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                    >
+                      {msg.type === 'bot' ? (
+                        <>
+                          {isHtmlContent(msg.content) ? (
+                            <div
+                              className="html-content"
+                              dangerouslySetInnerHTML={{
+                                __html: DOMPurify.sanitize(msg.content, {
+                                  ADD_ATTR: ['target', 'rel', 'style', 'class', 'id', 'width', 'height', 'src', 'alt', 'href'],
+                                  ADD_TAGS: ['style', 'svg', 'path', 'button']
+                                })
+                              }}
+                            />
+                          ) : (
+                            <div className="markdown-content">
+                              <ReactMarkdown
+                                components={{
+                                  a: ({ node, ...props }) => (
+                                    <a
+                                      {...props}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      data-node-type={node?.type}
+                                    />
+                                  )
+                                }}
+                              >
+                                {msg.content}
+                              </ReactMarkdown>
+                            </div>
+                          )}
+                          <button
+                            className={`message-copy-btn ${copiedId === msg.id ? 'copied' : ''}`}
+                            onClick={() => {
+                              navigator.clipboard.writeText(msg.content);
+                              setCopiedId(msg.id);
+                              setTimeout(() => setCopiedId(null), 2000);
                             }}
+                            title="Copy message"
                           >
-                            {msg.content}
-                          </ReactMarkdown>
-                        </div>
+                            {copiedId === msg.id ? <Check size={14} /> : <Copy size={14} />}
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <div style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
+                          <button
+                            className={`message-copy-btn ${copiedId === msg.id ? 'copied' : ''}`}
+                            onClick={() => {
+                              navigator.clipboard.writeText(msg.content);
+                              setCopiedId(msg.id);
+                              setTimeout(() => setCopiedId(null), 2000);
+                            }}
+                            title="Copy message"
+                          >
+                            {copiedId === msg.id ? <Check size={14} /> : <Copy size={14} />}
+                          </button>
+                        </>
                       )}
-                      <button
-                        className={`message-copy-btn ${copiedId === msg.id ? 'copied' : ''}`}
-                        onClick={() => {
-                          navigator.clipboard.writeText(msg.content);
-                          setCopiedId(msg.id);
-                          setTimeout(() => setCopiedId(null), 2000);
-                        }}
-                        title="Copy message"
+                    </motion.div>
+
+                    {/* AI Suggestions - Single Column List separate from the AI response box */}
+                    {isBot && isLastBotMsg && msg.suggestions && msg.suggestions.length > 0 && (
+                      <motion.div 
+                        className="ai-suggestions-container"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.35, delay: 0.12 }}
                       >
-                        {copiedId === msg.id ? <Check size={14} /> : <Copy size={14} />}
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <div style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
-                      <button
-                        className={`message-copy-btn ${copiedId === msg.id ? 'copied' : ''}`}
-                        onClick={() => {
-                          navigator.clipboard.writeText(msg.content);
-                          setCopiedId(msg.id);
-                          setTimeout(() => setCopiedId(null), 2000);
-                        }}
-                        title="Copy message"
-                      >
-                        {copiedId === msg.id ? <Check size={14} /> : <Copy size={14} />}
-                      </button>
-                    </>
-                  )}
-                </motion.div>
-              ))}
+                        <div className="ai-suggestions-header">
+                          <Sparkles size={13} className="ai-suggestions-sparkle" />
+                          <span>Suggested responses</span>
+                        </div>
+                        <div className="ai-suggestions-list">
+                          {msg.suggestions.map((suggestion, sIdx) => (
+                            <motion.button
+                              key={sIdx}
+                              className="ai-suggestion-btn"
+                              onClick={() => handleSuggestionClick(suggestion)}
+                              disabled={isLoading}
+                              initial={{ opacity: 0, y: 6 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.18 + sIdx * 0.07, duration: 0.25 }}
+                              whileHover={{ scale: 1.015, x: 2 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <span className="ai-suggestion-text">{suggestion}</span>
+                              <span className="ai-suggestion-arrow" aria-hidden="true">
+                                <ArrowRight size={14} />
+                              </span>
+                            </motion.button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                );
+              })}
               {!hasUserMessages && !isLoading && (
                 <QuickActions onQuickAction={handleQuickAction} isLoading={isLoading} />
               )}
               {isLoading && (
-                <div className="message message-bot message-loading">
-                  <div className="typing-indicator" aria-label="Neo is thinking...">
-                    <span className="typing-dot"></span>
-                    <span className="typing-dot"></span>
-                    <span className="typing-dot"></span>
+                <div className="message-group message-group-bot">
+                  <div className="message message-bot message-loading">
+                    <div className="typing-indicator" aria-label="Neo is thinking...">
+                      <span className="typing-dot"></span>
+                      <span className="typing-dot"></span>
+                      <span className="typing-dot"></span>
+                    </div>
                   </div>
                 </div>
               )}

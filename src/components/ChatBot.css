@@ -309,6 +309,22 @@
   height: 0px !important;
 }
 
+/* ── Message Groups & Bubbles ── */
+.chatbot-container .message-group {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  gap: 0.5rem !important;
+}
+
+.chatbot-container .message-group-user {
+  align-items: flex-end !important;
+}
+
+.chatbot-container .message-group-bot {
+  align-items: flex-start !important;
+}
+
 .chatbot-container .message {
   position: relative !important;
   max-width: 88% !important;
@@ -428,6 +444,167 @@
 .chatbot-container .html-content strong {
   font-weight: 700 !important;
   color: #0f172a !important;
+}
+
+.chatbot-container .html-content img {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 12px !important;
+  margin: 0.5rem 0 !important;
+  display: block !important;
+}
+
+.chatbot-container .html-content hr {
+  border: none !important;
+  border-top: 1px solid #e2e8f0 !important;
+  margin: 0.75rem 0 !important;
+}
+
+/* ── AI Suggestions (Single Column List, Premium UI) ── */
+.chatbot-container .ai-suggestions-container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.45rem !important;
+  width: 100% !important;
+  max-width: 92% !important;
+  margin-top: 0.25rem !important;
+  padding-left: 0.15rem !important;
+  box-sizing: border-box !important;
+}
+
+.chatbot-container .ai-suggestions-header {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+  color: #0d9488 !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  margin-bottom: 0.15rem !important;
+}
+
+.chatbot-container .ai-suggestions-sparkle {
+  width: 13px !important;
+  height: 13px !important;
+  color: #00b894 !important;
+  stroke: #00b894 !important;
+}
+
+.chatbot-container .ai-suggestions-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.45rem !important;
+  width: 100% !important;
+}
+
+.chatbot-container button.ai-suggestion-btn,
+.chatbot-container .ai-suggestion-btn {
+  all: unset !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.75rem !important;
+  padding: 0.68rem 0.95rem 0.68rem 1.05rem !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1.5px solid rgba(0, 184, 148, 0.28) !important;
+  border-radius: 14px !important;
+  color: #1e293b !important;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 0.84rem !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 184, 148, 0.05) !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease !important;
+  width: 100% !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.chatbot-container button.ai-suggestion-btn::before,
+.chatbot-container .ai-suggestion-btn::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  width: 3.5px !important;
+  background: linear-gradient(180deg, #00b894 0%, #078fcb 100%) !important;
+  opacity: 0.75 !important;
+  border-top-left-radius: 14px !important;
+  border-bottom-left-radius: 14px !important;
+  transition: width 0.2s ease, opacity 0.2s ease !important;
+}
+
+.chatbot-container button.ai-suggestion-btn:hover:not(:disabled),
+.chatbot-container .ai-suggestion-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f0fdf9 0%, #f0f9ff 100%) !important;
+  background-color: #f0fdf9 !important;
+  border-color: #00b894 !important;
+  color: #0f766e !important;
+  box-shadow: 0 6px 18px rgba(0, 184, 148, 0.18), 0 2px 6px rgba(7, 143, 203, 0.1) !important;
+  transform: translateX(3px) !important;
+}
+
+.chatbot-container button.ai-suggestion-btn:hover:not(:disabled)::before,
+.chatbot-container .ai-suggestion-btn:hover:not(:disabled)::before {
+  width: 5px !important;
+  opacity: 1 !important;
+}
+
+.chatbot-container .ai-suggestion-text {
+  flex: 1 1 auto !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  color: inherit !important;
+}
+
+.chatbot-container .ai-suggestion-arrow {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 50% !important;
+  background: rgba(0, 184, 148, 0.1) !important;
+  color: #00b894 !important;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease !important;
+}
+
+.chatbot-container .ai-suggestion-arrow svg {
+  width: 13px !important;
+  height: 13px !important;
+  stroke: currentColor !important;
+  transition: transform 0.2s ease !important;
+}
+
+.chatbot-container button.ai-suggestion-btn:hover:not(:disabled) .ai-suggestion-arrow,
+.chatbot-container .ai-suggestion-btn:hover:not(:disabled) .ai-suggestion-arrow {
+  background: #00b894 !important;
+  color: #ffffff !important;
+  transform: scale(1.08) !important;
+}
+
+.chatbot-container button.ai-suggestion-btn:hover:not(:disabled) .ai-suggestion-arrow svg,
+.chatbot-container .ai-suggestion-btn:hover:not(:disabled) .ai-suggestion-arrow svg {
+  transform: translateX(2px) !important;
+}
+
+.chatbot-container button.ai-suggestion-btn:active:not(:disabled),
+.chatbot-container .ai-suggestion-btn:active:not(:disabled) {
+  transform: scale(0.98) !important;
+}
+
+.chatbot-container button.ai-suggestion-btn:disabled,
+.chatbot-container .ai-suggestion-btn:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
 }
 
 /* ── Input Area ── */
@@ -632,5 +809,15 @@
 
   .chatbot-container .chatbot-toggle {
     align-self: flex-end !important;
+  }
+
+  .chatbot-container .ai-suggestions-container {
+    max-width: 100% !important;
+  }
+
+  .chatbot-container button.ai-suggestion-btn,
+  .chatbot-container .ai-suggestion-btn {
+    padding: 0.6rem 0.85rem !important;
+    font-size: 0.82rem !important;
   }
 }
