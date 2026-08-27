@@ -152,7 +152,7 @@ add_action('admin_menu', 'neo_chatbot_add_admin_menu');
  * Add 'Settings' action link on the Plugins list page
  */
 function neo_chatbot_plugin_action_links($links) {
-    $settings_link = '<a href="' . esc_url(admin_url('admin.php?page=neo-ai-chatbot')) . '" style="font-weight:600; color:#00b894;">' . __('Settings', 'crtt-neo-ai-chatbot') . '</a>';
+    $settings_link = '<a href="' . esc_url(admin_url('admin.php?page=neo-ai-chatbot')) . '" style="font-weight:600; color:#18181b;">' . __('Settings', 'crtt-neo-ai-chatbot') . '</a>';
     array_unshift($links, $settings_link);
     return $links;
 }
@@ -174,17 +174,17 @@ function neo_chatbot_render_admin_page() {
     $greeting     = get_option('neo_chatbot_greeting', 'Hola! I’m Neo, your dedicated Costa Rica tours & transportation specialist. How can I help you plan your perfect trip today?');
     ?>
     <div class="wrap" style="max-width: 850px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-        <div style="background: linear-gradient(135deg, #00b894 0%, #078fcb 100%); color: #fff; padding: 24px 30px; border-radius: 14px; margin: 20px 0 25px 0; box-shadow: 0 10px 25px rgba(0, 184, 148, 0.2);">
+        <div style="background: #18181b; color: #fff; padding: 24px 30px; border-radius: 14px; margin: 20px 0 25px 0; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);">
             <div style="display: flex; align-items: center; gap: 14px;">
-                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-size: 24px;">🤖</div>
+                <div style="width: 44px; height: 44px; border-radius: 10px; background: #27272a; display: flex; align-items: center; justify-content: center; font-size: 22px;">🤖</div>
                 <div>
-                    <h1 style="color: #fff; margin: 0; font-size: 24px; font-weight: 700;"><?php esc_html_e('Neo AI Chatbot Settings', 'crtt-neo-ai-chatbot'); ?></h1>
-                    <p style="margin: 4px 0 0; color: rgba(255,255,255,0.9); font-size: 14px;"><?php esc_html_e('Costa Rica Transfers & Tours AI Assistant', 'crtt-neo-ai-chatbot'); ?></p>
+                    <h1 style="color: #fff; margin: 0; font-size: 22px; font-weight: 700;"><?php esc_html_e('Neo AI Chatbot Settings', 'crtt-neo-ai-chatbot'); ?></h1>
+                    <p style="margin: 4px 0 0; color: #a1a1aa; font-size: 14px;"><?php esc_html_e('Costa Rica Transfers & Tours AI Assistant', 'crtt-neo-ai-chatbot'); ?></p>
                 </div>
             </div>
         </div>
 
-        <form method="post" action="options.php" style="background: #ffffff; padding: 30px; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+        <form method="post" action="options.php" style="background: #ffffff; padding: 30px; border-radius: 14px; border: 1px solid #e4e4e7; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
             <?php
             settings_fields('neo_chatbot_settings_group');
             do_settings_sections('neo_chatbot_settings_group');
@@ -192,31 +192,31 @@ function neo_chatbot_render_admin_page() {
 
             <table class="form-table" role="presentation" style="margin-top: 0;">
                 <tr>
-                    <th scope="row" style="font-weight: 600; color: #1e293b;"><?php esc_html_e('Chatbot Status', 'crtt-neo-ai-chatbot'); ?></th>
+                    <th scope="row" style="font-weight: 600; color: #09090b;"><?php esc_html_e('Chatbot Status', 'crtt-neo-ai-chatbot'); ?></th>
                     <td>
                         <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
                             <input type="checkbox" name="neo_chatbot_enabled" value="1" <?php checked($enabled, '1'); ?> />
-                            <span style="font-weight: 500; color: #334155;"><?php esc_html_e('Enable floating chatbot on website', 'crtt-neo-ai-chatbot'); ?></span>
+                            <span style="font-weight: 500; color: #18181b;"><?php esc_html_e('Enable floating chatbot on website', 'crtt-neo-ai-chatbot'); ?></span>
                         </label>
                     </td>
                 </tr>
 
                 <tr>
-                    <th scope="row" style="font-weight: 600; color: #1e293b;"><?php esc_html_e('Bot Display Name', 'crtt-neo-ai-chatbot'); ?></th>
+                    <th scope="row" style="font-weight: 600; color: #09090b;"><?php esc_html_e('Bot Display Name', 'crtt-neo-ai-chatbot'); ?></th>
                     <td>
                         <input type="text" name="neo_chatbot_bot_name" value="<?php echo esc_attr($bot_name); ?>" class="regular-text" style="width: 100%; max-width: 480px;" />
                     </td>
                 </tr>
 
                 <tr>
-                    <th scope="row" style="font-weight: 600; color: #1e293b;"><?php esc_html_e('Initial Greeting Message', 'crtt-neo-ai-chatbot'); ?></th>
+                    <th scope="row" style="font-weight: 600; color: #09090b;"><?php esc_html_e('Initial Greeting Message', 'crtt-neo-ai-chatbot'); ?></th>
                     <td>
                         <textarea name="neo_chatbot_greeting" rows="3" class="large-text" style="width: 100%; max-width: 480px;"><?php echo esc_textarea($greeting); ?></textarea>
                     </td>
                 </tr>
 
                 <tr>
-                    <th scope="row" style="font-weight: 600; color: #1e293b;"><?php esc_html_e('Production Webhook URL', 'crtt-neo-ai-chatbot'); ?></th>
+                    <th scope="row" style="font-weight: 600; color: #09090b;"><?php esc_html_e('Production Webhook URL', 'crtt-neo-ai-chatbot'); ?></th>
                     <td>
                         <input type="url" name="neo_chatbot_prod_url" value="<?php echo esc_attr($prod_url); ?>" class="regular-text code" style="width: 100%; max-width: 480px;" />
                         <p class="description"><?php esc_html_e('Default: https://ai.costaricatransfersandtours.com/webhook/neo', 'crtt-neo-ai-chatbot'); ?></p>
@@ -224,7 +224,7 @@ function neo_chatbot_render_admin_page() {
                 </tr>
 
                 <tr>
-                    <th scope="row" style="font-weight: 600; color: #1e293b;"><?php esc_html_e('Test Webhook URL', 'crtt-neo-ai-chatbot'); ?></th>
+                    <th scope="row" style="font-weight: 600; color: #09090b;"><?php esc_html_e('Test Webhook URL', 'crtt-neo-ai-chatbot'); ?></th>
                     <td>
                         <input type="url" name="neo_chatbot_test_url" value="<?php echo esc_attr($test_url); ?>" class="regular-text code" style="width: 100%; max-width: 480px;" />
                         <p class="description"><?php esc_html_e('Default: https://ai.costaricatransfersandtours.com/webhook-test/neo', 'crtt-neo-ai-chatbot'); ?></p>
@@ -232,7 +232,7 @@ function neo_chatbot_render_admin_page() {
                 </tr>
 
                 <tr>
-                    <th scope="row" style="font-weight: 600; color: #1e293b;"><?php esc_html_e('Default Mode', 'crtt-neo-ai-chatbot'); ?></th>
+                    <th scope="row" style="font-weight: 600; color: #09090b;"><?php esc_html_e('Default Mode', 'crtt-neo-ai-chatbot'); ?></th>
                     <td>
                         <select name="neo_chatbot_default_mode" style="min-width: 200px;">
                             <option value="live" <?php selected($default_mode, 'live'); ?>><?php esc_html_e('Live (Production)', 'crtt-neo-ai-chatbot'); ?></option>
@@ -242,11 +242,11 @@ function neo_chatbot_render_admin_page() {
                 </tr>
             </table>
 
-            <hr style="margin: 25px 0; border: none; border-top: 1px solid #e2e8f0;" />
+            <hr style="margin: 25px 0; border: none; border-top: 1px solid #e4e4e7;" />
 
-            <div style="background: #f8fafc; border-left: 4px solid #00b894; padding: 14px 18px; border-radius: 6px; margin-bottom: 20px;">
-                <h4 style="margin: 0 0 6px; font-size: 14px; font-weight: 600; color: #1e293b;"><?php esc_html_e('💡 Pro-tip: Custom Chat Trigger Buttons', 'crtt-neo-ai-chatbot'); ?></h4>
-                <p style="margin: 0; font-size: 13px; color: #475569; line-height: 1.5;">
+            <div style="background: #f4f4f5; border-left: 4px solid #18181b; padding: 14px 18px; border-radius: 6px; margin-bottom: 20px;">
+                <h4 style="margin: 0 0 6px; font-size: 14px; font-weight: 600; color: #09090b;"><?php esc_html_e('💡 Pro-tip: Custom Chat Trigger Buttons', 'crtt-neo-ai-chatbot'); ?></h4>
+                <p style="margin: 0; font-size: 13px; color: #52525b; line-height: 1.5;">
                     You can trigger the chat window from any link, button, or menu on your site by using:
                     <br />• <strong>Shortcode:</strong> <code>[neo_chat_button text="Plan Your Trip with Neo AI"]</code>
                     <br />• <strong>Link URL:</strong> <code>#open-neo-chat</code>
@@ -254,7 +254,7 @@ function neo_chatbot_render_admin_page() {
                 </p>
             </div>
 
-            <?php submit_button(__('Save Changes', 'crtt-neo-ai-chatbot'), 'primary', 'submit', false, array('style' => 'background: #00b894; border-color: #00a884; font-weight: 600; padding: 6px 20px; font-size: 14px;')); ?>
+            <?php submit_button(__('Save Changes', 'crtt-neo-ai-chatbot'), 'primary', 'submit', false, array('style' => 'background: #18181b; border-color: #18181b; color: #fff; font-weight: 600; padding: 6px 20px; font-size: 14px; border-radius: 8px;')); ?>
         </form>
     </div>
     <?php

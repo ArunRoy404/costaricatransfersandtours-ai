@@ -49,12 +49,12 @@
   padding: 0.42rem 0.72rem;
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 999px;
-  color: #c9fff0;
+  color: #ffffff;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.08em;
   line-height: 1;
   text-transform: uppercase;
@@ -169,20 +169,20 @@
 
 .services-list li {
   padding: 0.58rem 0.84rem;
-  border: 1px solid rgba(85, 239, 196, 0.26);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
-  color: rgba(255, 255, 255, 0.9);
-  background: rgba(0, 184, 148, 0.14);
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.1);
   font-size: 0.88rem;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
   transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
 }
 
 .services-list li:hover {
   transform: translateY(-2px);
-  background: rgba(0, 184, 148, 0.22);
-  border-color: rgba(85, 239, 196, 0.42);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .cta-wrapper {
@@ -190,29 +190,29 @@
 }
 
 .chat-trigger-btn {
-  min-height: 58px;
-  padding: 0.95rem 1.45rem;
-  border: 0;
+  min-height: 54px;
+  padding: 0.85rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
-  color: var(--white);
-  background: linear-gradient(135deg, #00b894, #078fcb);
-  box-shadow: 0 18px 38px rgba(0, 184, 148, 0.3), 0 0 0 8px rgba(0, 184, 148, 0.11);
+  color: #ffffff;
+  background: #18181b;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
   cursor: pointer;
   font: inherit;
-  font-size: 1rem;
-  font-weight: 900;
+  font-size: 0.95rem;
+  font-weight: 700;
   line-height: 1;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .chat-trigger-btn:hover {
-  filter: saturate(1.1);
-  transform: translateY(-3px);
-  box-shadow: 0 24px 46px rgba(0, 143, 119, 0.38), 0 0 0 10px rgba(0, 184, 148, 0.1);
+  background: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
 }
 
 .chat-trigger-btn:focus-visible {
-  outline: 3px solid rgba(85, 239, 196, 0.42);
+  outline: 3px solid rgba(255, 255, 255, 0.5);
   outline-offset: 4px;
 }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, X, MessageCircle, Copy, Check, Maximize2, Minimize2, FlaskConical, Radio, Bot, Sparkles, ArrowRight } from 'lucide-react';
+import { ArrowUp, X, MessageCircle, Copy, Check, Maximize2, Minimize2, FlaskConical, Radio, Bot, Sparkles, ArrowRight, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import DOMPurify from 'dompurify';
@@ -268,6 +268,14 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
                 </div>
               </div>
               <div className="chatbot-header-actions">
+                <button 
+                  className="chatbot-action-btn" 
+                  onClick={resetChat}
+                  title="New Chat"
+                  aria-label="New Chat"
+                >
+                  <RotateCcw size={16} />
+                </button>
                 {isModeToggleVisible && (
                   <button
                     className={`chatbot-action-btn mode-toggle ${isTestMode ? 'test' : 'production'}`}
@@ -275,7 +283,7 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
                     title={isTestMode ? 'Switch to Production' : 'Switch to Test Mode'}
                     aria-label={isTestMode ? 'Switch to Production' : 'Switch to Test Mode'}
                   >
-                    {isTestMode ? <FlaskConical size={17} /> : <Radio size={17} />}
+                    {isTestMode ? <FlaskConical size={16} /> : <Radio size={16} />}
                   </button>
                 )}
                 <button 
@@ -284,10 +292,10 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
                   title={isLarge ? "Small view" : "Large view"}
                   aria-label={isLarge ? "Small view" : "Large view"}
                 >
-                  {isLarge ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                  {isLarge ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
                 </button>
                 <button className="chatbot-action-btn close" onClick={() => setIsOpen(false)} aria-label="Close chat">
-                  <X size={20} />
+                  <X size={18} />
                 </button>
               </div>
             </div>
@@ -439,8 +447,11 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
                   disabled={isLoading || !input.trim()}
                   aria-label="Send message"
                 >
-                  <Send size={18} />
+                  <ArrowUp size={16} strokeWidth={2.5} />
                 </button>
+              </div>
+              <div className="chatbot-footer-subtext">
+                Neo can make mistakes. Verify travel details.
               </div>
             </div>
           </motion.div>

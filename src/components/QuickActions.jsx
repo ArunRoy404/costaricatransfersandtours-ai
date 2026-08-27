@@ -3,34 +3,20 @@ import './QuickActions.css';
 
 const QUICK_ACTIONS = [
   {
-    action: 'quickAction',
-    chatInput: 'Show me how to get started with planning my next trip and using this site.',
-    buttonText: '🚀 Get Started'
+    chatInput: 'Show me available travel packages and sightseeing tours in Costa Rica.',
+    buttonText: '✨ Explore Tours'
   },
   {
-    action: 'quickAction',
-    chatInput: 'Show me a quick tour of available travel packages and core website features.',
-    buttonText: '✨ Take Tours'
+    chatInput: 'Show me the best beach tours and coastal destinations.',
+    buttonText: '🏖️ Beach Escapes'
   },
   {
-    action: 'quickAction',
-    chatInput: 'Show me the best beach tours, coastal destinations, and island getaways.',
-    buttonText: '🏖️ Beach Tours'
-  },
-  {
-    action: 'quickAction',
-    chatInput: 'Show me available wildlife adventures, safaris, and nature expeditions.',
-    buttonText: '🦁 Wildlife Adventures'
-  },
-  {
-    action: 'quickAction',
-    chatInput: 'Show me exciting volcano trips, hiking expeditions, and geothermal tours.',
+    chatInput: 'Show me exciting volcano trips and nature expeditions.',
     buttonText: '🌋 Volcano Trips'
   },
   {
-    action: 'quickAction',
-    chatInput: 'Help me book a trip right now by starting the reservation and checkout workflow.',
-    buttonText: '📅 Book Now'
+    chatInput: 'Help me book private airport transportation and transfers.',
+    buttonText: '🚗 Airport Transfers'
   }
 ];
 
@@ -40,9 +26,14 @@ const QuickActions = ({ onQuickAction, isLoading }) => {
       className="quick-actions"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3, duration: 0.4 }}
+      transition={{ delay: 0.15, duration: 0.35 }}
     >
-      <p className="quick-actions-label">Get started quickly:</p>
+      <div className="quick-actions-hero">
+        <h2 className="quick-actions-title">What can I help with?</h2>
+        <p className="quick-actions-subtitle">
+          Ask anything about tours, transfers, or custom itineraries.
+        </p>
+      </div>
       <div className="quick-actions-grid">
         {QUICK_ACTIONS.map((qa, index) => (
           <motion.button
@@ -50,13 +41,13 @@ const QuickActions = ({ onQuickAction, isLoading }) => {
             className="quick-action-btn"
             onClick={() => onQuickAction(qa.chatInput)}
             disabled={isLoading}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4 + index * 0.06, duration: 0.25 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 + index * 0.05, duration: 0.25 }}
+            whileHover={{ scale: 1.015 }}
+            whileTap={{ scale: 0.98 }}
           >
-            {qa.buttonText}
+            <span>{qa.buttonText}</span>
           </motion.button>
         ))}
       </div>
