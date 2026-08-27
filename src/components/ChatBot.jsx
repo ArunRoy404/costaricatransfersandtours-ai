@@ -450,7 +450,7 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
                       >
                         <div className="ai-suggestions-header">
                           <Sparkles size={13} className="ai-suggestions-sparkle" />
-                          <span>Suggested responses</span>
+                          <span>AI Suggestions</span>
                         </div>
                         <div className="ai-suggestions-list">
                           {msg.suggestions.map((suggestion, sIdx) => (

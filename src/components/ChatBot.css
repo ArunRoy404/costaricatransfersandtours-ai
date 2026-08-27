@@ -53,7 +53,7 @@
   bottom: 1rem !important;
 }
 
-/* ── Floating Toggle Button (Minimalist Obsidian) ── */
+/* ── Floating Toggle Button (WhatsApp Green) ── */
 .chatbot-container .chatbot-toggle {
   width: 54px !important;
   height: 54px !important;
@@ -67,9 +67,10 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background: #18181b !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.2), 0 4px 10px -2px rgba(0, 0, 0, 0.1) !important;
+  background: #25D366 !important;
+  background-color: #25D366 !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 10px 25px -4px rgba(37, 211, 102, 0.4), 0 4px 10px -2px rgba(37, 211, 102, 0.2) !important;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, box-shadow 0.2s ease !important;
   padding: 0 !important;
   overflow: hidden !important;
@@ -77,8 +78,9 @@
 
 .chatbot-container .chatbot-toggle:hover {
   transform: translateY(-2px) scale(1.03) !important;
-  background: #09090b !important;
-  box-shadow: 0 14px 30px -4px rgba(0, 0, 0, 0.28), 0 6px 14px -2px rgba(0, 0, 0, 0.12) !important;
+  background: #20ba5a !important;
+  background-color: #20ba5a !important;
+  box-shadow: 0 14px 30px -4px rgba(37, 211, 102, 0.5), 0 6px 14px -2px rgba(37, 211, 102, 0.25) !important;
 }
 
 .chatbot-container .chatbot-toggle svg {
@@ -142,8 +144,9 @@
   flex: 0 0 auto !important;
   overflow: hidden !important;
   border-radius: 10px !important;
-  background: #18181b !important;
-  border: 1px solid #27272a !important;
+  background: #25D366 !important;
+  background-color: #25D366 !important;
+  border: 1px solid rgba(37, 211, 102, 0.4) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -522,37 +525,39 @@
 .chatbot-container .ai-suggestions-container {
   display: flex !important;
   flex-direction: column !important;
-  gap: 0.4rem !important;
+  gap: 0.45rem !important;
   width: 100% !important;
-  max-width: 92% !important;
-  margin-top: 0.2rem !important;
+  max-width: 95% !important;
+  margin-top: 1.15rem !important;
+  margin-bottom: 0.25rem !important;
   box-sizing: border-box !important;
 }
 
 .chatbot-container .ai-suggestions-header {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 0.35rem !important;
-  color: #64748b !important;
-  font-size: 0.7rem !important;
+  gap: 0.4rem !important;
+  color: #71717a !important;
+  font-size: 0.72rem !important;
   font-weight: 600 !important;
   letter-spacing: 0.05em !important;
   text-transform: uppercase !important;
   font-family: inherit !important;
-  margin-bottom: 0.1rem !important;
+  margin-bottom: 0.25rem !important;
+  padding-left: 0.15rem !important;
 }
 
 .chatbot-container .ai-suggestions-sparkle {
-  width: 12px !important;
-  height: 12px !important;
-  color: #0f766e !important;
-  stroke: #0f766e !important;
+  width: 13px !important;
+  height: 13px !important;
+  color: #71717a !important;
+  stroke: #71717a !important;
 }
 
 .chatbot-container .ai-suggestions-list {
   display: flex !important;
   flex-direction: column !important;
-  gap: 0.4rem !important;
+  gap: 0.45rem !important;
   width: 100% !important;
 }
 
@@ -564,14 +569,14 @@
   align-items: center !important;
   justify-content: space-between !important;
   gap: 0.75rem !important;
-  padding: 0.65rem 0.85rem 0.65rem 0.95rem !important;
-  background: #ffffff !important;
-  background-color: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
+  padding: 0.68rem 0.9rem !important;
+  background: #f4f4f5 !important;
+  background-color: #f4f4f5 !important;
+  border: 1px solid #e4e4e7 !important;
   border-radius: 12px !important;
-  color: #1e293b !important;
+  color: #18181b !important;
   font-family: inherit !important;
-  font-size: 0.82rem !important;
+  font-size: 0.83rem !important;
   font-weight: 500 !important;
   line-height: 1.35 !important;
   text-align: left !important;
@@ -579,38 +584,15 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
   transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
   width: 100% !important;
-  position: relative !important;
-  overflow: hidden !important;
-}
-
-.chatbot-container button.ai-suggestion-btn::before,
-.chatbot-container .ai-suggestion-btn::before {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  bottom: 0 !important;
-  width: 3px !important;
-  background: #0f766e !important;
-  opacity: 0.7 !important;
-  border-top-left-radius: 12px !important;
-  border-bottom-left-radius: 12px !important;
-  transition: width 0.15s ease, opacity 0.15s ease !important;
 }
 
 .chatbot-container button.ai-suggestion-btn:hover:not(:disabled),
 .chatbot-container .ai-suggestion-btn:hover:not(:disabled) {
-  background: #f8fafc !important;
-  background-color: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-  color: #09090b !important;
+  background: #e4e4e7 !important;
+  background-color: #e4e4e7 !important;
+  border-color: #d4d4d8 !important;
+  color: #000000 !important;
   transform: translateX(2px) !important;
-}
-
-.chatbot-container button.ai-suggestion-btn:hover:not(:disabled)::before,
-.chatbot-container .ai-suggestion-btn:hover:not(:disabled)::before {
-  width: 4px !important;
-  opacity: 1 !important;
 }
 
 .chatbot-container .ai-suggestion-text {
@@ -628,22 +610,23 @@
   width: 20px !important;
   height: 20px !important;
   border-radius: 50% !important;
-  background: #f1f5f9 !important;
-  color: #64748b !important;
-  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease !important;
+  background: #ffffff !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #71717a !important;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
 }
 
 .chatbot-container .ai-suggestion-arrow svg {
-  width: 12px !important;
-  height: 12px !important;
+  width: 11px !important;
+  height: 11px !important;
   stroke: currentColor !important;
 }
 
 .chatbot-container button.ai-suggestion-btn:hover:not(:disabled) .ai-suggestion-arrow,
 .chatbot-container .ai-suggestion-btn:hover:not(:disabled) .ai-suggestion-arrow {
   background: #18181b !important;
+  border-color: #18181b !important;
   color: #ffffff !important;
-  transform: scale(1.05) !important;
 }
 
 .chatbot-container button.ai-suggestion-btn:active:not(:disabled),
