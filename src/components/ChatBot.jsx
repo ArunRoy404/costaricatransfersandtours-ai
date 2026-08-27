@@ -483,33 +483,26 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
               {isLoading && (
                 <div className="message-group message-group-bot">
                   <motion.div 
-                    className="message message-bot message-loading status-indicator-bubble"
-                    initial={{ opacity: 0, y: 6 }}
+                    className="status-indicator-inline"
+                    initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <div className="status-indicator-content">
-                      <div className="status-icon-wrapper">
-                        <Sparkles size={14} className="status-pulse-sparkle" />
-                      </div>
-                      <AnimatePresence mode="wait">
-                        <motion.span
-                          key={statusText || 'searching'}
-                          initial={{ opacity: 0, y: 3 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -3 }}
-                          transition={{ duration: 0.18 }}
-                          className="status-stage-text"
-                        >
-                          {statusText || 'Searching database...'}
-                        </motion.span>
-                      </AnimatePresence>
-                      <div className="typing-indicator status-dots" aria-hidden="true">
-                        <span className="typing-dot"></span>
-                        <span className="typing-dot"></span>
-                        <span className="typing-dot"></span>
-                      </div>
+                    <div className="status-icon-wrapper">
+                      <Sparkles size={14} className="status-sparkle-icon" />
                     </div>
+                    <AnimatePresence mode="wait">
+                      <motion.span
+                        key={statusText || 'searching'}
+                        initial={{ opacity: 0, y: 3 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -3 }}
+                        transition={{ duration: 0.25 }}
+                        className="status-stage-text"
+                      >
+                        {statusText || 'Searching database...'}
+                      </motion.span>
+                    </AnimatePresence>
                   </motion.div>
                 </div>
               )}
