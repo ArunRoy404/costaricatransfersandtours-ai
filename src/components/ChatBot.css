@@ -764,7 +764,7 @@
   letter-spacing: -0.01em !important;
 }
 
-/* ── Minimalist Typing Indicator ── */
+/* ── Minimalist Dynamic Status Indicator ── */
 .chatbot-container .message-loading {
   display: inline-flex !important;
   align-items: center !important;
@@ -773,10 +773,78 @@
   min-width: 60px !important;
   width: auto !important;
   background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid #e4e4e7 !important;
   border-radius: 16px !important;
   border-bottom-left-radius: 4px !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+}
+
+.chatbot-container .message-loading.status-indicator-bubble {
+  padding: 0.6rem 0.95rem !important;
+  max-width: 92% !important;
+}
+
+.chatbot-container .status-indicator-content {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.55rem !important;
+  color: #18181b !important;
+}
+
+.chatbot-container .status-icon-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #18181b !important;
+  flex: 0 0 auto !important;
+}
+
+.chatbot-container .status-pulse-sparkle {
+  color: #18181b !important;
+  stroke: #18181b !important;
+  animation: neoSparklePulse 1.8s ease-in-out infinite !important;
+}
+
+@keyframes neoSparklePulse {
+  0%, 100% {
+    transform: scale(0.9) rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.15) rotate(12deg);
+    opacity: 1;
+  }
+}
+
+.chatbot-container .status-stage-text {
+  font-size: 0.82rem !important;
+  font-weight: 500 !important;
+  color: #18181b !important;
+  font-family: inherit !important;
+  line-height: 1.35 !important;
+  white-space: normal !important;
+}
+
+.chatbot-container .status-dots {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  margin-left: 0.15rem !important;
+  height: 12px !important;
+  min-height: 12px !important;
+}
+
+.chatbot-container .status-dots .typing-dot {
+  width: 4.5px !important;
+  height: 4.5px !important;
+  min-width: 4.5px !important;
+  min-height: 4.5px !important;
+  max-width: 4.5px !important;
+  max-height: 4.5px !important;
+  border-radius: 50% !important;
+  background: #71717a !important;
+  background-color: #71717a !important;
+  opacity: 0.45 !important;
 }
 
 .chatbot-container .typing-indicator {
@@ -801,8 +869,8 @@
   max-height: 6px !important;
   flex: 0 0 6px !important;
   border-radius: 50% !important;
-  background-color: #64748b !important;
-  background: #64748b !important;
+  background-color: #71717a !important;
+  background: #71717a !important;
   opacity: 0.35 !important;
   animation: neoTypingBounce 1.4s infinite ease-in-out both !important;
 }

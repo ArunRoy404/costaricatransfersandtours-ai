@@ -35,6 +35,53 @@ const HAS_HTML_RE = /<[a-z][\s\S]*>/i;
 
 const isHtmlContent = (str) => typeof str === 'string' && HAS_HTML_RE.test(str);
 
+const getStatusSequence = (input) => {
+  const text = (input || '').toLowerCase();
+
+  if (/transfer|airport|shuttle|pickup|flight|van|drive|taxi|car|sjo|lir|private transfer/.test(text)) {
+    return [
+      'Searching transfer routes & airport schedules...',
+      'Calculating vehicle options & private rates...',
+      'Checking pickup & destination timing...',
+      'Preparing transfer recommendations...'
+    ];
+  }
+
+  if (/boat|charter|catamaran|sailing|fishing|snorkeling|cruise|yacht|ocean/.test(text)) {
+    return [
+      'Searching boat charters & marine fleet...',
+      'Checking captain availability & ocean routes...',
+      'Verifying charter inclusions & pricing...',
+      'Curating boat charter options...'
+    ];
+  }
+
+  if (/tour|beach|volcano|zipline|adventure|hike|rafting|rainforest|jungle|national park|canopy|wildlife|animal|sloth|waterfall/.test(text)) {
+    return [
+      'Searching tours & adventure database...',
+      'Checking real-time availability & excursion rates...',
+      'Analyzing top-rated guides & itinerary spots...',
+      'Formatting tour recommendations...'
+    ];
+  }
+
+  if (/book|price|cost|rate|quote|reserve|checkout|pay|package|itinerary/.test(text)) {
+    return [
+      'Connecting to travel inventory database...',
+      'Checking real-time pricing & package rates...',
+      'Verifying availability & inclusions...',
+      'Preparing booking details...'
+    ];
+  }
+
+  return [
+    'Searching Costa Rica travel database...',
+    'Analyzing travel preferences & availability...',
+    'Matching best recommendations...',
+    'Finalizing response...'
+  ];
+};
+
 const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
   const wpConfig = typeof window !== 'undefined' ? (window.NeoChatbotConfig || {}) : {};
   const PRODUCTION_URL = wpConfig.productionUrl || 'https://ai.costaricatransfersandtours.com/webhook/neo';
@@ -50,6 +97,8 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [statusText, setStatusText] = useState('');
+  const statusTimerRef = useRef(null);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const [sessionId, setSessionId] = useState(getInitialSessionId);
@@ -62,16 +111,30 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
   const hasUserMessages = messages.length > 0;
 
   const resetChat = () => {
+    if (statusTimerRef.current) {
+      clearInterval(statusTimerRef.current);
+      statusTimerRef.current = null;
+    }
     const newSessionId = createSessionId();
     localStorage.setItem('chat_session_id', newSessionId);
     setSessionId(newSessionId);
     setMessages([]);
+    setStatusText('');
   };
 
   const toggleMode = () => {
     setIsTestMode(prev => !prev);
     resetChat();
   };
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (statusTimerRef.current) {
+        clearInterval(statusTimerRef.current);
+      }
+    };
+  }, []);
 
   // Handle external trigger
   useEffect(() => {
@@ -108,7 +171,7 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, statusText, isLoading]);
 
   const sendMessageToWebhook = async (chatInput, action) => {
     const userMessage = {
@@ -121,8 +184,23 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
     if (action !== 'quickAction') {
       setInput('');
     }
+
+    // Start sequential status indicator
+    const stages = getStatusSequence(chatInput);
+    setStatusText(stages[0]);
     setIsLoading(true);
     setErrorMsg('');
+
+    if (statusTimerRef.current) {
+      clearInterval(statusTimerRef.current);
+    }
+    let stageIndex = 0;
+    statusTimerRef.current = setInterval(() => {
+      stageIndex++;
+      if (stageIndex < stages.length) {
+        setStatusText(stages[stageIndex]);
+      }
+    }, 4000);
 
     try {
       const response = await fetch(webhookUrl, {
@@ -197,7 +275,12 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
         setInput(chatInput);
       }
     } finally {
+      if (statusTimerRef.current) {
+        clearInterval(statusTimerRef.current);
+        statusTimerRef.current = null;
+      }
       setIsLoading(false);
+      setStatusText('');
       setTimeout(() => textareaRef.current?.focus(), 100);
     }
   };
@@ -399,13 +482,35 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
               )}
               {isLoading && (
                 <div className="message-group message-group-bot">
-                  <div className="message message-bot message-loading">
-                    <div className="typing-indicator" aria-label="Neo is thinking...">
-                      <span className="typing-dot"></span>
-                      <span className="typing-dot"></span>
-                      <span className="typing-dot"></span>
+                  <motion.div 
+                    className="message message-bot message-loading status-indicator-bubble"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="status-indicator-content">
+                      <div className="status-icon-wrapper">
+                        <Sparkles size={14} className="status-pulse-sparkle" />
+                      </div>
+                      <AnimatePresence mode="wait">
+                        <motion.span
+                          key={statusText || 'searching'}
+                          initial={{ opacity: 0, y: 3 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -3 }}
+                          transition={{ duration: 0.18 }}
+                          className="status-stage-text"
+                        >
+                          {statusText || 'Searching database...'}
+                        </motion.span>
+                      </AnimatePresence>
+                      <div className="typing-indicator status-dots" aria-hidden="true">
+                        <span className="typing-dot"></span>
+                        <span className="typing-dot"></span>
+                        <span className="typing-dot"></span>
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
               )}
               <div ref={messagesEndRef} />
