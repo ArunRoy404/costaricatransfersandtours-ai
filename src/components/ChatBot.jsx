@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowUp, X, MessageCircle, Copy, Check, Maximize2, Minimize2, FlaskConical, Radio, Bot, Sparkles, ArrowRight, RotateCcw } from 'lucide-react';
+import { ArrowUp, Minus, MessageCircle, Copy, Check, Maximize2, Minimize2, FlaskConical, Radio, Bot, Sparkles, ArrowRight, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import DOMPurify from 'dompurify';
@@ -40,7 +40,6 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
   const PRODUCTION_URL = wpConfig.productionUrl || 'https://ai.costaricatransfersandtours.com/webhook/neo';
   const TEST_URL = wpConfig.testUrl || 'https://ai.costaricatransfersandtours.com/webhook-test/neo';
   const botName = wpConfig.botName || 'Neo AI';
-  const defaultGreeting = wpConfig.greeting || 'Hola! I\u2019m Neo, your dedicated Costa Rica tours & transportation specialist. How can I help you plan your perfect trip today?';
 
   const isModeToggleVisible = showModeToggle !== undefined 
     ? Boolean(showModeToggle) 
@@ -48,14 +47,7 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
 
   const [isOpen, setIsOpen] = useState(Boolean(wpConfig.initialOpen));
   const [isLarge, setIsLarge] = useState(false);
-  const [messages, setMessages] = useState([
-    { 
-      id: '1', 
-      type: 'bot', 
-      content: defaultGreeting,
-      suggestions: []
-    }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -67,20 +59,13 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
 
   const webhookUrl = isTestMode ? TEST_URL : PRODUCTION_URL;
 
-  const hasUserMessages = messages.some(m => m.type === 'user');
+  const hasUserMessages = messages.length > 0;
 
   const resetChat = () => {
     const newSessionId = createSessionId();
     localStorage.setItem('chat_session_id', newSessionId);
     setSessionId(newSessionId);
-    setMessages([
-      {
-        id: generateMsgId('bot'),
-        type: 'bot',
-        content: defaultGreeting,
-        suggestions: []
-      }
-    ]);
+    setMessages([]);
   };
 
   const toggleMode = () => {
@@ -294,8 +279,8 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
                 >
                   {isLarge ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
                 </button>
-                <button className="chatbot-action-btn close" onClick={() => setIsOpen(false)} aria-label="Close chat">
-                  <X size={18} />
+                <button className="chatbot-action-btn close" onClick={() => setIsOpen(false)} title="Minimize chat" aria-label="Minimize chat">
+                  <Minus size={18} />
                 </button>
               </div>
             </div>
@@ -458,8 +443,8 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
         )}
       </AnimatePresence>
 
-      <button className="chatbot-toggle" onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Close chat' : 'Open chat'}>
-        {isOpen ? <X size={28} /> : <MessageCircle size={28} />}
+      <button className="chatbot-toggle" onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Minimize chat' : 'Open chat'}>
+        {isOpen ? <Minus size={26} strokeWidth={2.5} /> : <MessageCircle size={26} />}
       </button>
     </div>
   );
