@@ -99,6 +99,7 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [statusText, setStatusText] = useState('');
   const statusTimerRef = useRef(null);
+  const abortControllerRef = useRef(null);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const [sessionId, setSessionId] = useState(getInitialSessionId);
@@ -111,15 +112,22 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
   const hasUserMessages = messages.length > 0;
 
   const resetChat = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
     if (statusTimerRef.current) {
       clearInterval(statusTimerRef.current);
       statusTimerRef.current = null;
     }
+    setIsLoading(false);
+    setStatusText('');
+    setErrorMsg('');
+    setInput('');
     const newSessionId = createSessionId();
     localStorage.setItem('chat_session_id', newSessionId);
     setSessionId(newSessionId);
     setMessages([]);
-    setStatusText('');
   };
 
   const toggleMode = () => {
@@ -127,9 +135,12 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
     resetChat();
   };
 
-  // Clean up timer on unmount
+  // Clean up timer and abort controller on unmount
   useEffect(() => {
     return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
       if (statusTimerRef.current) {
         clearInterval(statusTimerRef.current);
       }
@@ -202,6 +213,13 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
       }
     }, 4000);
 
+    // Cancel previous request if any
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
     try {
       const response = await fetch(webhookUrl, {
         method: 'POST',
@@ -214,6 +232,7 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
           sessionId: sessionId,
           session_id: sessionId
         }),
+        signal: abortController.signal
       });
 
       if (!response.ok) {
@@ -268,6 +287,10 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
         setMessages(prev => [...prev, botMessage]);
       }
     } catch (error) {
+      if (error.name === 'AbortError' || abortController.signal.aborted) {
+        // Chat was reset or cancelled by user — ignore
+        return;
+      }
       console.error('Chat error:', error);
       setMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
       setErrorMsg('Connection error. Please check your internet and try again.');
@@ -275,6 +298,9 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
         setInput(chatInput);
       }
     } finally {
+      if (abortControllerRef.current === abortController) {
+        abortControllerRef.current = null;
+      }
       if (statusTimerRef.current) {
         clearInterval(statusTimerRef.current);
         statusTimerRef.current = null;
