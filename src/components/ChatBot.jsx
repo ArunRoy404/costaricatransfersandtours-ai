@@ -3,6 +3,7 @@ import { ArrowUp, Minus, MessageCircle, Copy, Check, Maximize2, Minimize2, Flask
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import DOMPurify from 'dompurify';
+import QuickActions from './QuickActions';
 import './ChatBot.css';
 
 // Ensure all links inside sanitized HTML open in a new tab safely
@@ -28,8 +29,6 @@ const getInitialSessionId = () => {
   localStorage.setItem('chat_session_id', newSessionId);
   return newSessionId;
 };
-
-import QuickActions from './QuickActions';
 
 const HAS_HTML_RE = /<[a-z][\s\S]*>/i;
 
