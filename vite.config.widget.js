@@ -12,7 +12,7 @@ export default defineConfig({
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
   build: {
-    outDir: 'wordpress-plugin/crtt-neo-ai-chatbot/assets',
+    outDir: 'wordpress/crtt-neo-ai-chatbot/assets',
     emptyOutDir: true,
     lib: {
       entry: resolve(__dirname, 'src/widget.jsx'),
