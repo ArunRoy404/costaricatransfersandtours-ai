@@ -32,28 +32,24 @@ const getInitialSessionId = () => {
 
 const PROACTIVE_PROMPTS = [
   {
-    badge: 'Costa Rica Specialist',
-    title: 'Need travel help?',
-    text: 'Ask Neo for private airport transfers, customized tours & real-time rates.',
-    cta: 'Chat with Neo'
+    title: 'Looking for Costa Rica tours?',
+    subtitle: 'Explore catamaran charters & guided trips.',
+    cta: 'Explore'
   },
   {
-    badge: 'Airport Transfers',
-    title: 'SJO or LIR Transfer?',
-    text: 'Get private vehicle options and transparent quotes in seconds.',
-    cta: 'Check Transfer Rates'
+    title: 'Private Boat Charters?',
+    subtitle: 'Sailing, snorkeling & Guanacaste fleet.',
+    cta: 'Charters'
   },
   {
-    badge: 'Tours & Charters',
-    title: 'Planning excursions?',
-    text: 'Explore sunset catamarans, Arenal volcano tours & rainforest hikes.',
-    cta: 'Explore Experiences'
+    title: 'Ready to book your tour?',
+    subtitle: 'Instant availability, cart & live checkout.',
+    cta: 'Book Now'
   },
   {
-    badge: 'Instant AI Assistant',
-    title: 'Hola! I’m Neo AI 🇨🇷',
-    text: 'Your dedicated concierge for seamless Costa Rica travel & transfers.',
-    cta: 'Start Planning'
+    title: 'Need travel assistance?',
+    subtitle: 'Ask Neo AI for curated itineraries.',
+    cta: 'Chat Now'
   }
 ];
 
@@ -63,15 +59,6 @@ const isHtmlContent = (str) => typeof str === 'string' && HAS_HTML_RE.test(str);
 
 const getStatusSequence = (input) => {
   const text = (input || '').toLowerCase();
-
-  if (/transfer|airport|shuttle|pickup|flight|van|drive|taxi|car|sjo|lir|private transfer/.test(text)) {
-    return [
-      'Searching transfer routes & airport schedules...',
-      'Calculating vehicle options & private rates...',
-      'Checking pickup & destination timing...',
-      'Preparing transfer recommendations...'
-    ];
-  }
 
   if (/boat|charter|catamaran|sailing|fishing|snorkeling|cruise|yacht|ocean/.test(text)) {
     return [
@@ -91,17 +78,17 @@ const getStatusSequence = (input) => {
     ];
   }
 
-  if (/book|price|cost|rate|quote|reserve|checkout|pay|package|itinerary/.test(text)) {
+  if (/book|cart|checkout|price|cost|rate|quote|reserve|pay|package|itinerary/.test(text)) {
     return [
       'Connecting to travel inventory database...',
       'Checking real-time pricing & package rates...',
       'Verifying availability & inclusions...',
-      'Preparing booking details...'
+      'Preparing booking & checkout details...'
     ];
   }
 
   return [
-    'Searching Costa Rica travel database...',
+    'Searching Costa Rica experiences database...',
     'Analyzing travel preferences & availability...',
     'Matching best recommendations...',
     'Finalizing response...'
@@ -643,64 +630,59 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {!isOpen && showTooltip && (
-          <motion.div
-            className="chatbot-proactive-tooltip"
-            initial={{ opacity: 0, y: 14, scale: 0.92 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.94 }}
-            transition={{ type: 'spring', damping: 24, stiffness: 300 }}
-            onClick={handleTooltipClick}
-            role="region"
-            aria-label="Proactive travel assistance"
+      <div className="chatbot-bottom-row">
+        <div className="chatbot-toggle-wrapper">
+          <button 
+            className="chatbot-toggle" 
+            onClick={() => setIsOpen(!isOpen)} 
+            aria-label={isOpen ? 'Minimize chat' : 'Open chat'}
           >
-            <div className="tooltip-header">
-              <div className="tooltip-badge">
-                <span className="tooltip-live-indicator" />
-                <Sparkles size={12} className="tooltip-sparkle" />
-                <span>{PROACTIVE_PROMPTS[activePromptIndex].badge}</span>
+            {isOpen ? <Minus size={26} strokeWidth={2.5} /> : <MessageCircle size={26} />}
+          </button>
+          {!isOpen && (
+            <span className="chatbot-live-badge" title="Neo AI Online">
+              <span className="chatbot-live-dot" />
+            </span>
+          )}
+        </div>
+
+        <AnimatePresence>
+          {!isOpen && showTooltip && (
+            <motion.div
+              className="chatbot-proactive-tooltip"
+              initial={{ opacity: 0, x: -12, scale: 0.94 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -10, scale: 0.94 }}
+              transition={{ type: 'spring', damping: 24, stiffness: 320 }}
+              onClick={handleTooltipClick}
+              role="region"
+              aria-label="Costa Rica Tours Concierge Assistance"
+            >
+              <div className="tooltip-text-block">
+                <div className="tooltip-title-row">
+                  <span className="tooltip-live-pulse" />
+                  <span className="tooltip-title">{PROACTIVE_PROMPTS[activePromptIndex].title}</span>
+                </div>
+                <p className="tooltip-subtitle">{PROACTIVE_PROMPTS[activePromptIndex].subtitle}</p>
               </div>
-              <button
-                className="tooltip-close-btn"
-                onClick={handleDismissTooltip}
-                title="Dismiss message"
-                aria-label="Close message"
-              >
-                <X size={14} />
-              </button>
-            </div>
 
-            <div className="tooltip-body">
-              <h4 className="tooltip-title">{PROACTIVE_PROMPTS[activePromptIndex].title}</h4>
-              <p className="tooltip-text">{PROACTIVE_PROMPTS[activePromptIndex].text}</p>
-            </div>
-
-            <div className="tooltip-footer">
-              <span className="tooltip-cta-btn">
-                <span>{PROACTIVE_PROMPTS[activePromptIndex].cta}</span>
-                <ArrowRight size={13} />
-              </span>
-            </div>
-
-            <div className="tooltip-pointer" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="chatbot-toggle-wrapper">
-        <button 
-          className="chatbot-toggle" 
-          onClick={() => setIsOpen(!isOpen)} 
-          aria-label={isOpen ? 'Minimize chat' : 'Open chat'}
-        >
-          {isOpen ? <Minus size={26} strokeWidth={2.5} /> : <MessageCircle size={26} />}
-        </button>
-        {!isOpen && (
-          <span className="chatbot-live-badge" title="Neo AI Online">
-            <span className="chatbot-live-dot" />
-          </span>
-        )}
+              <div className="tooltip-actions">
+                <span className="tooltip-cta-btn">
+                  <span>{PROACTIVE_PROMPTS[activePromptIndex].cta}</span>
+                  <ArrowRight size={12} strokeWidth={2.5} />
+                </span>
+                <button
+                  className="tooltip-close-btn"
+                  onClick={handleDismissTooltip}
+                  title="Dismiss message"
+                  aria-label="Dismiss message"
+                >
+                  <X size={12} strokeWidth={2.2} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

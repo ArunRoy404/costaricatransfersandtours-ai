@@ -3,20 +3,20 @@ import './QuickActions.css';
 
 const QUICK_ACTIONS = [
   {
-    chatInput: 'Show me available travel packages and sightseeing tours in Costa Rica.',
+    chatInput: 'Show me available travel packages and guided tours in Costa Rica.',
     buttonText: '✨ Explore Tours'
   },
   {
-    chatInput: 'Show me the best beach tours and coastal destinations.',
-    buttonText: '🏖️ Beach Escapes'
+    chatInput: 'Show me private catamaran and boat charter options.',
+    buttonText: '⛵ Boat Charters'
   },
   {
     chatInput: 'Show me exciting volcano trips and nature expeditions.',
     buttonText: '🌋 Volcano Trips'
   },
   {
-    chatInput: 'Help me book private airport transportation and transfers.',
-    buttonText: '🚗 Airport Transfers'
+    chatInput: 'Help me view my booking cart, checkout, and pricing details.',
+    buttonText: '🛒 Cart & Booking'
   }
 ];
 
@@ -31,7 +31,7 @@ const QuickActions = ({ onQuickAction, isLoading }) => {
       <div className="quick-actions-hero">
         <h2 className="quick-actions-title">What can I help with?</h2>
         <p className="quick-actions-subtitle">
-          Ask anything about tours, transfers, or custom itineraries.
+          Ask anything about tours, boat charters, or your booking cart.
         </p>
       </div>
       <div className="quick-actions-grid">
