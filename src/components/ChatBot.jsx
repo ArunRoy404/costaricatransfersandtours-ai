@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowUp, Minus, MessageCircle, Copy, Check, Maximize2, Minimize2, FlaskConical, Radio, Bot, Sparkles, ArrowRight, RotateCcw } from 'lucide-react';
+import { ArrowUp, Minus, MessageCircle, Copy, Check, Maximize2, Minimize2, FlaskConical, Radio, Bot, Sparkles, ArrowRight, RotateCcw, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import DOMPurify from 'dompurify';
@@ -29,6 +29,33 @@ const getInitialSessionId = () => {
   localStorage.setItem('chat_session_id', newSessionId);
   return newSessionId;
 };
+
+const PROACTIVE_PROMPTS = [
+  {
+    badge: 'Costa Rica Specialist',
+    title: 'Need travel help?',
+    text: 'Ask Neo for private airport transfers, customized tours & real-time rates.',
+    cta: 'Chat with Neo'
+  },
+  {
+    badge: 'Airport Transfers',
+    title: 'SJO or LIR Transfer?',
+    text: 'Get private vehicle options and transparent quotes in seconds.',
+    cta: 'Check Transfer Rates'
+  },
+  {
+    badge: 'Tours & Charters',
+    title: 'Planning excursions?',
+    text: 'Explore sunset catamarans, Arenal volcano tours & rainforest hikes.',
+    cta: 'Explore Experiences'
+  },
+  {
+    badge: 'Instant AI Assistant',
+    title: 'Hola! I’m Neo AI 🇨🇷',
+    text: 'Your dedicated concierge for seamless Costa Rica travel & transfers.',
+    cta: 'Start Planning'
+  }
+];
 
 const HAS_HTML_RE = /<[a-z][\s\S]*>/i;
 
@@ -105,10 +132,60 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
   const [isTestMode, setIsTestMode] = useState(() => wpConfig.defaultMode === 'test');
   const [copiedId, setCopiedId] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [activePromptIndex, setActivePromptIndex] = useState(0);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   const webhookUrl = isTestMode ? TEST_URL : PRODUCTION_URL;
 
   const hasUserMessages = messages.length > 0;
+
+  // Proactive assistance tooltip timer (shows after 5 seconds on any route/page)
+  useEffect(() => {
+    if (isOpen || isDismissed) return;
+
+    const timer = setTimeout(() => {
+      if (!isOpen && !isDismissed) {
+        setShowTooltip(true);
+      }
+    }, 5000);
+
+    const handleRouteChange = () => {
+      if (!isOpen) {
+        setIsDismissed(false);
+        setShowTooltip(false);
+      }
+    };
+
+    window.addEventListener('popstate', handleRouteChange);
+    window.addEventListener('hashchange', handleRouteChange);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('popstate', handleRouteChange);
+      window.removeEventListener('hashchange', handleRouteChange);
+    };
+  }, [isOpen, isDismissed]);
+
+  // Rotate proactive assistance message periodically if tooltip remains active
+  useEffect(() => {
+    if (!showTooltip || isOpen) return;
+    const cycleInterval = setInterval(() => {
+      setActivePromptIndex((prev) => (prev + 1) % PROACTIVE_PROMPTS.length);
+    }, 8500);
+    return () => clearInterval(cycleInterval);
+  }, [showTooltip, isOpen]);
+
+  const handleDismissTooltip = (e) => {
+    e.stopPropagation();
+    setShowTooltip(false);
+    setIsDismissed(true);
+  };
+
+  const handleTooltipClick = () => {
+    setShowTooltip(false);
+    setIsOpen(true);
+  };
 
   const resetChat = () => {
     if (abortControllerRef.current) {
@@ -566,9 +643,65 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
         )}
       </AnimatePresence>
 
-      <button className="chatbot-toggle" onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Minimize chat' : 'Open chat'}>
-        {isOpen ? <Minus size={26} strokeWidth={2.5} /> : <MessageCircle size={26} />}
-      </button>
+      <AnimatePresence>
+        {!isOpen && showTooltip && (
+          <motion.div
+            className="chatbot-proactive-tooltip"
+            initial={{ opacity: 0, y: 14, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.94 }}
+            transition={{ type: 'spring', damping: 24, stiffness: 300 }}
+            onClick={handleTooltipClick}
+            role="region"
+            aria-label="Proactive travel assistance"
+          >
+            <div className="tooltip-header">
+              <div className="tooltip-badge">
+                <span className="tooltip-live-indicator" />
+                <Sparkles size={12} className="tooltip-sparkle" />
+                <span>{PROACTIVE_PROMPTS[activePromptIndex].badge}</span>
+              </div>
+              <button
+                className="tooltip-close-btn"
+                onClick={handleDismissTooltip}
+                title="Dismiss message"
+                aria-label="Close message"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            <div className="tooltip-body">
+              <h4 className="tooltip-title">{PROACTIVE_PROMPTS[activePromptIndex].title}</h4>
+              <p className="tooltip-text">{PROACTIVE_PROMPTS[activePromptIndex].text}</p>
+            </div>
+
+            <div className="tooltip-footer">
+              <span className="tooltip-cta-btn">
+                <span>{PROACTIVE_PROMPTS[activePromptIndex].cta}</span>
+                <ArrowRight size={13} />
+              </span>
+            </div>
+
+            <div className="tooltip-pointer" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="chatbot-toggle-wrapper">
+        <button 
+          className="chatbot-toggle" 
+          onClick={() => setIsOpen(!isOpen)} 
+          aria-label={isOpen ? 'Minimize chat' : 'Open chat'}
+        >
+          {isOpen ? <Minus size={26} strokeWidth={2.5} /> : <MessageCircle size={26} />}
+        </button>
+        {!isOpen && (
+          <span className="chatbot-live-badge" title="Neo AI Online">
+            <span className="chatbot-live-dot" />
+          </span>
+        )}
+      </div>
     </div>
   );
 };

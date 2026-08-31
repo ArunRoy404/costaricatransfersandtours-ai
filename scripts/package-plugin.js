@@ -3,6 +3,7 @@ import { existsSync, unlinkSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
+import process from 'process';
 
 const require = createRequire(import.meta.url);
 const AdmZip = require('adm-zip');
@@ -12,7 +13,8 @@ const __dirname = dirname(__filename);
 const rootDir = resolve(__dirname, '..');
 
 console.log('📦 Step 1: Building standalone widget bundle with Vite...');
-execSync('npx vite build --config vite.config.widget.js', { cwd: rootDir, stdio: 'inherit' });
+const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+execSync(`${npxCmd} vite build --config vite.config.widget.js`, { cwd: rootDir, stdio: 'inherit', shell: true });
 
 console.log('\n📦 Step 2: Creating Linux/WordPress-compliant .zip package...');
 
