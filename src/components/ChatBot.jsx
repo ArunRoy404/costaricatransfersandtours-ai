@@ -113,6 +113,7 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
   const [statusText, setStatusText] = useState('');
   const statusTimerRef = useRef(null);
   const abortControllerRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const [sessionId, setSessionId] = useState(getInitialSessionId);
@@ -239,13 +240,46 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
     }
   }, [input]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
-  };
-
+  // Smart scroll: when a bot response comes in, scroll to top of that message so user reads from beginning with clear breathing room below header
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, statusText, isLoading]);
+    if (messages.length === 0) return;
+
+    const lastMsg = messages[messages.length - 1];
+
+    const scrollTimer = setTimeout(() => {
+      const container = messagesContainerRef.current;
+      if (!container) return;
+
+      if (lastMsg.type === 'bot') {
+        const latestEl = container.querySelector('#latest-chat-message');
+        if (latestEl) {
+          const containerRect = container.getBoundingClientRect();
+          const elRect = latestEl.getBoundingClientRect();
+          const relativeTop = elRect.top - containerRect.top;
+          // Add 16px of top padding so message top is completely visible with breathing room below header
+          const targetScrollTop = container.scrollTop + relativeTop - 16;
+          
+          container.scrollTo({
+            top: Math.max(0, targetScrollTop),
+            behavior: 'smooth'
+          });
+        } else {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 60);
+
+    return () => clearTimeout(scrollTimer);
+  }, [messages]);
+
+  // When loading status changes, ensure indicator is visible
+  useEffect(() => {
+    if (isLoading) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [statusText, isLoading]);
 
   const sendMessageToWebhook = async (chatInput, action) => {
     const userMessage = {
@@ -457,13 +491,18 @@ const ChatBot = ({ externalOpen, setExternalOpen, showModeToggle }) => {
               </div>
             </div>
 
-            <div className="chatbot-messages">
+            <div ref={messagesContainerRef} className="chatbot-messages">
               {messages.map((msg, index) => {
                 const isBot = msg.type === 'bot';
                 const isLastBotMsg = isBot && !messages.slice(index + 1).some(m => m.type === 'bot');
+                const isLastMessage = index === messages.length - 1;
 
                 return (
-                  <div key={msg.id} className={`message-group message-group-${msg.type}`}>
+                  <div 
+                    key={msg.id} 
+                    id={isLastMessage ? 'latest-chat-message' : undefined}
+                    className={`message-group message-group-${msg.type}`}
+                  >
                     <motion.div 
                       className={`message message-${msg.type}`}
                       initial={{ opacity: 0, x: msg.type === 'user' ? 10 : -10 }}
